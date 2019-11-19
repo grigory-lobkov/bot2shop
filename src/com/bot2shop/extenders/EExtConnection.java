@@ -6,5 +6,5 @@ package com.bot2shop.extenders;
  *
  * */
 
-public abstract class EExtConnection {
+public class EExtConnection {
 }

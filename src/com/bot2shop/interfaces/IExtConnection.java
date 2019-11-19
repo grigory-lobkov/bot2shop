@@ -9,7 +9,7 @@ package com.bot2shop.interfaces;
 public interface IExtConnection {
 
 
-    // Set base parameters for connection (api keys, kokens, passwords, etc)
+    // Set base parameters for connection (api keys, tokens, passwords, etc)
 
     void setup(String[] params);
 
@@ -18,6 +18,7 @@ public interface IExtConnection {
     // inText - incoming message from user
     // returns text, sending to user back
 
+    /** @noinspection unused*/
     String income(String sessId, String inText);
 
     // Register to external server, awaiting for users
