@@ -4,7 +4,8 @@
 * Dependencies: telegrambots-4.4.0-jar-with-dependencies.jar
 * Url: https://github.com/rubenlagus/TelegramBots/releases
 *
-* HowTo: Download Source code from URL, compile it into .jar with dependencies
+* HowTo: Download Source code from URL, compile it into .jar with dependencies,
+*        File -> Project Structure  -> Add "Dependencies" (+) -> Select your .jar file
 *
 * */
 package com.bot2shop.ext;
