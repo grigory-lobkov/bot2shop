@@ -17,7 +17,6 @@ public interface IExtConnection {
     // sessId - session, we are working with
     // inText - incoming message from user
     // returns text, sending to user back
-
     /** @noinspection unused*/
     String income(String sessId, String inText);
 
