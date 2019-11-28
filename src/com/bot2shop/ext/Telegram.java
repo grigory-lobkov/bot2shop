@@ -30,9 +30,10 @@ public class Telegram extends TelegramLongPollingBot implements IExtConnection {
     protected Telegram() {
         ApiContextInitializer.init();
     }
+
     public void setup(String[] params) {
         if (params.length != 2) {
-            System.out.println("Telegram. Not all parameters sent, need {\"username\", \"token\"}"); // TODO: rise error
+            System.out.println("Telegram. Not all parameters sent, need {\"username\", \"token\"}"); // TODO: raise error
         } else {
             username = params[0];
             token = params[1];
