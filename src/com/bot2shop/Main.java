@@ -14,14 +14,14 @@ class Main {
         //System.getProperties().put("socksProxyHost", "127.0.0.1");
         //System.getProperties().put("socksProxyPort", "9150");
 
-        IExtConnection bot1 = new Telegram() {
+        /*IExtConnection bot1 = new Telegram() {
             @Override
             public String income(String sessId, String inText) {
                 return Main.income(1, sessId, inText);
             }
         };
         bot1.setup(new String[]{"Pizza24testingbot", "1011637303:AAE7o8myLHhW96fgAlnHI3EQeAwEbs12_fE"});
-        //bot1.start(); // TODO: How to start multiple bots ?
+        bot1.start();*/ // TODO: How to start multiple bots ?
         test();
     }
 
