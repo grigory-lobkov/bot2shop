@@ -61,7 +61,16 @@ public class Telegram extends TelegramLongPollingBot implements IExtConnection {
         System.out.println(errorText);
     }
 
-    // Procedure to send text message
+    // Integer identifier of connection
+    private int id;
+    public void setConnId(int id) {
+        this.id = id;
+    }
+    public int getConnId() {
+        return id;
+    }
+
+    // Send text message to session
     public boolean sendText(String sessionId, String textMessage) {
         try {
             SendMessage outMessage = new SendMessage();
@@ -73,15 +82,6 @@ public class Telegram extends TelegramLongPollingBot implements IExtConnection {
             LogError(sessionId, e.getMessage());
         }
         return false;
-    }
-
-    // Integer identifier of connection
-    private int id;
-    public void setConnId(int id) {
-        this.id = id;
-    }
-    public int getConnId() {
-        return id;
     }
 
     // Register to external server, awaiting for users
