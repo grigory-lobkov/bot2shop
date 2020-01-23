@@ -49,30 +49,28 @@ public class Telegram extends TelegramLongPollingBot implements IExtConnection {
             Message inMessage = update.getMessage();
             String text = inMessage.getText();
             String chatId = inMessage.getChatId().toString();
-            String answer = this.incomeText(chatId, text);
+            this.incomeText(chatId, text);
         }
     }
 
     // Function to @Override - receives message and returns an answer, if return value is set
-    public String incomeText(String sessId, String inText) {
-        return inText;
-    }
+    public void incomeText(String sessionId, String inText) { }
 
     // Function to @Override - logs an errors
-    public void LogError(String sessId, String errorText) {
+    public void LogError(String sessionId, String errorText) {
         System.out.println(errorText);
     }
 
     // Procedure to send text message
-    public boolean sendText(String sessId, String textMessage) {
+    public boolean sendText(String sessionId, String textMessage) {
         try {
             SendMessage outMessage = new SendMessage();
-            outMessage.setChatId(Long.getLong(sessId));
+            outMessage.setChatId(Long.getLong(sessionId));
             outMessage.setText(textMessage);
             this.execute(outMessage);
             return true;
         } catch (TelegramApiException e) {
-            LogError(sessId, e.getMessage());
+            LogError(sessionId, e.getMessage());
         }
         return false;
     }
@@ -86,15 +84,15 @@ public class Telegram extends TelegramLongPollingBot implements IExtConnection {
         return id;
     }
 
+    // Register to external server, awaiting for users
     public void start() {
         TelegramBotsApi botsApi = new TelegramBotsApi();
 
         try {
             botsApi.registerBot(this);
-        } catch (TelegramApiRequestException var3) {
-            var3.printStackTrace();
+        } catch (TelegramApiRequestException e) {
+            e.printStackTrace();
         }
-
     }
 
 }
