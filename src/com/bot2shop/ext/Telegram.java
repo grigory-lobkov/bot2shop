@@ -10,7 +10,6 @@
 * */
 package com.bot2shop.ext;
 
-import com.bot2shop.extenders.EExtConnection;
 import com.bot2shop.interfaces.IExtConnection;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -31,6 +30,7 @@ public class Telegram extends TelegramLongPollingBot implements IExtConnection {
         ApiContextInitializer.init();
     }
 
+    // Set base parameters for connection (api keys, tokens, passwords, etc)
     public void setup(String[] params) {
         if (params.length != 2) {
             System.out.println("Telegram. Not all parameters sent, need {\"username\", \"token\"}"); // TODO: raise error
@@ -45,24 +45,45 @@ public class Telegram extends TelegramLongPollingBot implements IExtConnection {
     public String getBotUsername() { return this.username; }
 
     public void onUpdateReceived(Update update) {
-        try {
-            if (update.hasMessage() && update.getMessage().hasText()) {
-                Message inMessage = update.getMessage();
-                String text = inMessage.getText();
-                SendMessage outMessage = new SendMessage();
-                outMessage.setChatId(inMessage.getChatId());
-                outMessage.setText(this.income(inMessage.getFrom().getId().toString(), text));
-                this.execute(outMessage);
-            }
-        } catch (TelegramApiException var5) {
-            var5.printStackTrace();
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            Message inMessage = update.getMessage();
+            String text = inMessage.getText();
+            String chatId = inMessage.getChatId().toString();
+            String answer = this.incomeText(chatId, text);
         }
-
     }
 
-    // function to @Override
-    public String income(String sessId, String inText) {
+    // Function to @Override - receives message and returns an answer, if return value is set
+    public String incomeText(String sessId, String inText) {
         return inText;
+    }
+
+    // Function to @Override - logs an errors
+    public void LogError(String sessId, String errorText) {
+        System.out.println(errorText);
+    }
+
+    // Procedure to send text message
+    public boolean sendText(String sessId, String textMessage) {
+        try {
+            SendMessage outMessage = new SendMessage();
+            outMessage.setChatId(Long.getLong(sessId));
+            outMessage.setText(textMessage);
+            this.execute(outMessage);
+            return true;
+        } catch (TelegramApiException e) {
+            LogError(sessId, e.getMessage());
+        }
+        return false;
+    }
+
+    // Integer identifier of connection
+    private int id;
+    public void setConnId(int id) {
+        this.id = id;
+    }
+    public int getConnId() {
+        return id;
     }
 
     public void start() {
