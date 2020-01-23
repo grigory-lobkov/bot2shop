@@ -9,7 +9,6 @@ import com.bot2shop.storage.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Scanner;
 
 class Main {
 
@@ -21,6 +20,8 @@ class Main {
 
     // Start of the BOT
     public static void main(String[] args) {
+        incomeTextProcessor.setLogger(logger);
+
         IExtConnection bot;
         /*
         // Proxy if needed (for Tor browser in memory):
@@ -80,22 +81,12 @@ class Main {
     // returns text, sending to user back
     private static void incomeText(int connId, String sessionId, String inText) {
         logger.LogIncome(connId, sessionId, inText);
-        //try {
+        try {
             Session session = getSession(connId, sessionId);
             incomeTextProcessor.processMessage(session, inText);
-        //} catch (Exception e) {
-        //    logger.LogError(connId, sessionId, "incomeText "+e);
-        //}
+        } catch (Exception e) {
+            logger.LogError(connId, sessionId, "incomeText "+e);
+        }
     }
 
-    // for development purpose
-    private static void test() {
-        String input;
-        Scanner in = new Scanner(System.in);
-        do {
-            input = in.nextLine();
-            incomeText(0, "2", input);
-        } while (input.compareTo("/exit") != 0);
-        in.close();
-    }
 }

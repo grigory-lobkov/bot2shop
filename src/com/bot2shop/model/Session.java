@@ -11,14 +11,14 @@ import java.time.ZonedDateTime;
 public class Session {
 
     public int connId; // connection identifier
-    public String sessId; // session identifier
+    public String sessionId; // session identifier
     public IExtConnection conn; // connection to messenger
-    public ZonedDateTime createDate; // when session created
-    public ZonedDateTime lastAccess; // last session access
+    private ZonedDateTime createDate; // when session created
+    private ZonedDateTime lastAccess; // last session access
 
-    public Session(int connId, String sessId, IExtConnection conn) {
+    public Session(int connId, String sessionId, IExtConnection conn) {
         this.connId = connId;
-        this.sessId = sessId;
+        this.sessionId = sessionId;
         this.conn = conn;
         createDate = ZonedDateTime.now();
     }
