@@ -12,9 +12,9 @@ public class IncomeText {
     }
 
     // Process incoming user message
-    public void processMessage(Session session, String inText){
+    void processMessage(Session session, String inText){
         String outText = inText+"!";
-        logger.LogIncome(session.connId, session.sessionId, outText);
+        logger.LogOutcome(session.connId, session.sessionId, outText);
         session.conn.sendText(session.sessionId, outText);
     }
 

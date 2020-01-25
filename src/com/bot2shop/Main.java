@@ -28,8 +28,8 @@ class Main {
         //System.getProperties().put("proxySet", "true");
         //System.getProperties().put("socksProxyHost", "127.0.0.1");
         //System.getProperties().put("socksProxyPort", "9150");
-        //connections.<Telegram>add("Pizza24testingbot", "1011637303:AAE7o8myLHhW96fgAlnHI3EQeAwEbs12_fE");
-        connections.<ConsoleChat>add();
+        //connections.add(new Telegram(), "Pizza24testingbot", "1011637303:AAE7o8myLHhW96fgAlnHI3EQeAwEbs12_fE");
+        connections.add(new ConsoleChat());
         connections.startAll();
 
         //IExtConnection bot;

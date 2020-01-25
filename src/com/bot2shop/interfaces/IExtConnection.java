@@ -16,17 +16,23 @@ public interface IExtConnection {
     // Function to @Override - receives message
     // sessionId - session, we are working with
     // inText - incoming message from user
-    void incomeText(String sessionId, String inText);
+    //void incomeText(String sessionId, String inText);
 
     // Function to @Override - logs an errors
-    void LogError(String sessionId, String errorText);
+    //void LogError(String sessionId, String errorText);
 
     // Procedure to send text message, if success, returns true
     boolean sendText(String sessionId, String textMessage);
 
     // Getter and setter of integer identifier of connection
     void setConnId(int id);
-    int getConnId();
+    //int getConnId();
+
+    // Set processor to log errors
+    void setErrorProcessor(IProcessor<String> logErrorProcessor);
+
+    // Set processor to process income user messages
+    void setIncomeTextProcessor(IProcessor<String> incomeTextProcessor);
 
     // Register to external server, awaiting for users
     void start();

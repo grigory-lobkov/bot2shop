@@ -1,5 +1,6 @@
 package com.bot2shop.processor;
 
+import com.bot2shop.interfaces.IExtConnection;
 import com.bot2shop.interfaces.ILogger;
 import com.bot2shop.model.Session;
 
@@ -14,7 +15,7 @@ public class Sessions {
     static private List<Session> sessions = new ArrayList<>(); // users sessions
     static private Hashtable<String, Integer> sessionsIds = new Hashtable<>(); // users sessions identifiers hashtable
 
-    public Session getSession(int connId, String sessionId) {
+    Session getSession(int connId, String sessionId, List<IExtConnection> connections) {
         // check if exists
         String hashKey = connId+"-"+sessionId;
         Integer sessKey = sessionsIds.get(hashKey);
