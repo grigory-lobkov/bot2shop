@@ -2,7 +2,7 @@ package com.bot2shop;
 
 import com.bot2shop.ext.*;
 import com.bot2shop.interfaces.*;
-import com.bot2shop.model.Session;
+import com.bot2shop.prepare.*;
 import com.bot2shop.processor.*;
 import com.bot2shop.storage.*;
 
@@ -21,6 +21,7 @@ class Main {
     public static void main(String[] args) {
         incomeTextProcessor.setLogger(logger);
         sessions.setLogger(logger);
+        incomeTextProcessor.setUserWordPreparator(new LowCase()); // each word of user preparator
         connections.setLogger(logger);
         connections.setSessions(sessions);
         connections.setIncomeTextProcessor(incomeTextProcessor);
