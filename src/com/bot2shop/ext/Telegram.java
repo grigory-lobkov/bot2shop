@@ -31,7 +31,7 @@ public class Telegram extends TelegramLongPollingBot implements IExtConnection {
     }
 
     // Set base parameters for connection (api keys, tokens, passwords, etc)
-    public void setup(String[] params) {
+    public void setup(String... params) {
         if (params.length != 2) {
             System.out.println("Telegram. Not all parameters sent, need {\"username\", \"token\"}"); // TODO: raise error
         } else {

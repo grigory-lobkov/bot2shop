@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class ConsoleChat implements IExtConnection {
 
-    public void setup(String[] params) { } // no need to set up
+    public void setup(String... params) { } // no need to set up
     public void incomeText(String sessionId, String inText) { } // will be overridden
     public void LogError(String sessionId, String errorText) { } // will be overridden
 

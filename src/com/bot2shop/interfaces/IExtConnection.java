@@ -11,7 +11,7 @@ public interface IExtConnection {
 
     // Set base parameters for connection (api keys, tokens, passwords, etc)
 
-    void setup(String[] params);
+    void setup(String... params);
 
     // Function to @Override - receives message
     // sessionId - session, we are working with
