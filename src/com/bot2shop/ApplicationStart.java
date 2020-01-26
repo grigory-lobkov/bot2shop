@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-class Main {
+class ApplicationStart {
 
     static private ILogger logger = new ConsoleLogger(); // log anything
     static private IncomeText incomeTextProcessor = new IncomeText(); // processor for incoming messages
@@ -32,37 +32,6 @@ class Main {
         //connections.add(new Telegram(), "Pizza24testingbot", "1011637303:AAE7o8myLHhW96fgAlnHI3EQeAwEbs12_fE");
         connections.add(new ConsoleChat());
         connections.startAll();
-
-        //IExtConnection bot;
-        /*bot = new Telegram() {
-            @Override
-            public void incomeText(String sessionId, String inText) {
-                Main.incomeText(this.getConnId(), sessionId, inText);
-            }
-            @Override
-            public void LogError(String sessionId, String errorText) {
-                logger.LogError(this.getConnId(), sessionId, errorText);
-            }
-        };
-        bot.setConnId(connections.size());
-        connections.add(bot);
-        bot.setup(new String[]{"Pizza24testingbot", "1011637303:AAE7o8myLHhW96fgAlnHI3EQeAwEbs12_fE"});
-        bot.start(); // TODO: How to start multiple bots ?
-        */
-        /*bot = new ConsoleChat() {
-            @Override
-            public void incomeText(String sessionId, String inText) {
-                Main.incomeText(this.getConnId(), sessionId, inText);
-            }
-            @Override
-            public void LogError(String sessionId, String errorText) {
-                logger.LogError(this.getConnId(), sessionId, errorText);
-            }
-        };
-        bot.setConnId(connections.size());
-        connections.add(bot);
-        bot.setup(null);
-        bot.start();*/
     }
 
 }

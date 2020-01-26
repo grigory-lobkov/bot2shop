@@ -57,19 +57,5 @@ public class Connections {
             conn.start(); // TODO: Start multiple bots simultaneously, restart if failed
         }
     }
-/*
-    // receives message and returns an answer
-    // sessionId - session, we are working with
-    // inText - incoming message from user
-    // returns text, sending to user back
-    private void processIncomeText(int connId, String sessionId, String inText) {
-        logger.LogIncome(connId, sessionId, inText);
-        try {
-            Session session = sessions.getSession(connId, sessionId);
-            incomeText.processMessage(session, inText);
-        } catch (Exception e) {
-            logger.LogError(connId, sessionId, "incomeText "+e);
-        }
-    }*/
 
 }
