@@ -1,9 +1,10 @@
 package com.bot2shop.processor;
 
-import com.bot2shop.interfaces.IExtConnection;
+import com.bot2shop.interfaces.IConnection;
 import com.bot2shop.interfaces.ILogger;
 import com.bot2shop.interfaces.IProcessor;
 import com.bot2shop.model.Session;
+import com.bot2shop.processor.IncomeText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +40,10 @@ public class Connections {
     }
 
     // list of connections to different messengers
-    private List<IExtConnection> connections = new ArrayList<>();
+    private List<IConnection> connections = new ArrayList<>();
 
     // add new connection with some parameters
-    public void add(IExtConnection conn, String... params) {
+    public void add(IConnection conn, String... params) {
         int id = connections.size();
         conn.setConnId(id);
         conn.setErrorProcessor(logErrorProcessor);
@@ -53,7 +54,7 @@ public class Connections {
 
     // start all connections
     public void startAll() {
-        for (IExtConnection conn: connections){
+        for (IConnection conn: connections){
             conn.start(); // TODO: Start multiple bots simultaneously, restart if failed
         }
     }

@@ -5,7 +5,7 @@ import java.util.Hashtable;
      Phrases, we send to user
 */
 
-public class Phrase<UserWordType, UserWordTo> {
+public class Phrase<KeyWordType, KeyWordTo> {
 
     public enum GoesAfter {AFTERPREVIOUS, AFTERROOM, AFTERALL}
 
@@ -16,7 +16,7 @@ public class Phrase<UserWordType, UserWordTo> {
     private static int nextId = 0; // autoincrement next identifier of Phrase for Hashtable
     private final int id = nextId++; // autoincrement identifier of Phrase for Hashtable
 
-    public Hashtable<UserWordTo, UserWordType> userWords; // UserWord's, lead to Action
+    public Hashtable<KeyWordTo, KeyWordType> keyWords; // key words, lead to Action
     public Phrase[] nextPhrases; // Phrase's expected after this Phrase
 
     public GoesAfter goesAfter = GoesAfter.AFTERALL; // after what we are expecting this Phrase

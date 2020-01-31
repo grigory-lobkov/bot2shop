@@ -10,7 +10,7 @@
 * */
 package com.bot2shop.ext;
 
-import com.bot2shop.interfaces.IExtConnection;
+import com.bot2shop.interfaces.IConnection;
 import com.bot2shop.interfaces.IProcessor;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -21,7 +21,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
-public class Telegram extends TelegramLongPollingBot implements IExtConnection {
+public class Telegram extends TelegramLongPollingBot implements IConnection {
 
     private String username;
     private String token;

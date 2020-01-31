@@ -1,6 +1,6 @@
 package com.bot2shop.processor;
 
-import com.bot2shop.interfaces.IExtConnection;
+import com.bot2shop.interfaces.IConnection;
 import com.bot2shop.interfaces.ILogger;
 import com.bot2shop.model.Session;
 
@@ -11,11 +11,12 @@ import java.util.List;
 public class Sessions {
 
     private ILogger logger;
+    public void setLogger(ILogger logger) { this.logger = logger; }
 
     static private List<Session> sessions = new ArrayList<>(); // users sessions
     static private Hashtable<String, Integer> sessionsIds = new Hashtable<>(); // users sessions identifiers hashtable
 
-    Session getSession(int connId, String sessionId, List<IExtConnection> connections) {
+    Session getSession(int connId, String sessionId, List<IConnection> connections) {
         // check if exists
         String hashKey = connId+"-"+sessionId;
         Integer sessKey = sessionsIds.get(hashKey);
@@ -29,8 +30,5 @@ public class Sessions {
         return newSession.refresh();
     }
 
-    public void setLogger(ILogger logger) {
-        this.logger = logger;
-    }
 
 }

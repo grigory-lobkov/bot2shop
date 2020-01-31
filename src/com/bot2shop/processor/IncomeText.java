@@ -1,15 +1,15 @@
 package com.bot2shop.processor;
 
 import com.bot2shop.interfaces.ILogger;
-import com.bot2shop.interfaces.IUserWordPreparator;
+import com.bot2shop.interfaces.IPreparator;
 import com.bot2shop.model.Session;
 
 public class IncomeText {
 
     // each word of user preparator
-    private IUserWordPreparator userWordPreparator;
-    public void setUserWordPreparator(IUserWordPreparator userWordPreparator) {
-        this.userWordPreparator = userWordPreparator;
+    private IPreparator preparator;
+    public void setPreparator(IPreparator preparator) {
+        this.preparator = preparator;
     }
 
     // logger
