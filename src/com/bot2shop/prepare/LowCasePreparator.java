@@ -12,7 +12,13 @@ public class LowCasePreparator implements IPreparator {
     // Lower case key word
     @Override
     public String prepareKey(String keyWord) {
-        return keyWord.toLowerCase();
+        return keyWord.toLowerCase().trim();
+    }
+
+    // Determine keyword base weight
+    @Override
+    public float getBaseKeywordWeight(Object keyWord) {
+        return (float) Math.pow(1.1, ((String) keyWord).length());
     }
 
     // Split user input to words and lower case it

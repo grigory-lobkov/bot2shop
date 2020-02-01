@@ -14,10 +14,13 @@ public class Phrase<KeyWordType> {
     public enum Room {HELLO, ORDER, ORDERITEM, CONTACTS, FINISH}
 
     private static int nextId = 0; // autoincrement next identifier of Phrase for Hashtable
-    private final int id = nextId++; // autoincrement identifier of Phrase for Hashtable
+    public int id = nextId++; // autoincrement identifier of Phrase for Hashtable
 
-    public Hashtable<KeyWordType, Integer> keyWords; // key words, lead to Action
+    public String[] keyWords; // key words, lead to Action
+    public Hashtable<KeyWordType, Float> keyWordsTbl; // key words, lead to Action
+    public int[] nextPhrasesId; // Phrase's expected after this Phrase
     public Phrase[] nextPhrases; // Phrase's expected after this Phrase
+    public boolean showOnlyOnce = false; // show this phrase only once in session
 
     public GoesAfter goesAfter = GoesAfter.AFTERALL; // after what we are expecting this Phrase
     public int chance; // chance to get it
@@ -35,6 +38,7 @@ public class Phrase<KeyWordType> {
     public Hashtable<Integer, Phrase> afterPhrases = null; // after what Phrases this goes
 
     public int timeoutSec = -1; // how much seconds passed to timeout
+    public int timeoutPhraseId = -1; // where to go after timeout
     public Phrase timeoutPhrase = null; // where to go after timeout
 
     @Override

@@ -10,6 +10,9 @@ public interface IPreparator<KeyWordType> {
     // Preparing key words
     KeyWordType prepareKey(String word);
 
+    // Determine keyword base weight
+    float getBaseKeywordWeight(KeyWordType keyWord);
+
     // Preparing user input
     KeyWordType[] prepareInput(String string);
 

@@ -13,8 +13,8 @@ class ApplicationStart {
     static private Sessions sessions = new Sessions(); // Session list
     static private Connections connections = new Connections(); // Connection list
     static private IDictionary dictionary = new InlineDictionary(); // Connection to dictionary
-    static private Phrases<String> phrases = new Phrases<String>(); // Bot knowledge base
-    static private IPreparator<String> preparator = new LowCasePreparator(); // User words and phrases keyword preparator
+    static private Phrases<String> phrases = new Phrases<String>(); // Bot knowledge base, <KeyWordType>
+    static private IPreparator<String> preparator = new LowCasePreparator(); // User words and phrases keyword preparator, <KeyWordType>
 
     // Start of the BOT
     public static void main(String[] args) {
