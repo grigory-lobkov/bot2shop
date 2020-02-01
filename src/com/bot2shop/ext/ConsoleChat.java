@@ -1,15 +1,13 @@
 package com.bot2shop.ext;
 
-import com.bot2shop.interfaces.IExtConnection;
+import com.bot2shop.interfaces.IConnection;
 import com.bot2shop.interfaces.IProcessor;
 
 import java.util.Scanner;
 
-public class ConsoleChat implements IExtConnection {
+public class ConsoleChat implements IConnection {
 
     public void setup(String... params) { } // no need to set up
-    //public void incomeText(String sessionId, String inText) { } // will be overridden
-    //public void LogError(String sessionId, String errorText) { } // will be overridden
 
     // Send text message to session
     public boolean sendText(String sessionId, String textMessage) {

@@ -6,7 +6,7 @@ package com.bot2shop.interfaces;
 */
 
 
-public interface IExtConnection {
+public interface IConnection {
 
 
     // Set base parameters for connection (api keys, tokens, passwords, etc)

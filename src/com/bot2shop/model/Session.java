@@ -1,6 +1,6 @@
 package com.bot2shop.model;
 
-import com.bot2shop.interfaces.IExtConnection;
+import com.bot2shop.interfaces.IConnection;
 
 import java.time.ZonedDateTime;
 
@@ -12,11 +12,11 @@ public class Session {
 
     public int connId; // connection identifier
     public String sessionId; // session identifier
-    public IExtConnection conn; // connection to messenger
+    public IConnection conn; // connection to messenger
     private ZonedDateTime createDate; // when session created
     private ZonedDateTime lastAccess; // last session access
 
-    public Session(int connId, String sessionId, IExtConnection conn) {
+    public Session(int connId, String sessionId, IConnection conn) {
         this.connId = connId;
         this.sessionId = sessionId;
         this.conn = conn;
