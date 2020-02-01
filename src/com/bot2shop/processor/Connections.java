@@ -8,7 +8,7 @@ import com.bot2shop.model.Session;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Connections {
+public class Connections<KeyWordType> {
 
     // processor for logging
     private ILogger logger;
@@ -19,21 +19,21 @@ public class Connections {
     }
 
     // session list class
-    private Sessions sessions;
-    public void setSessions(Sessions sessions) { this.sessions = sessions; }
+    private Sessions<KeyWordType> sessions;
+    public void setSessions(Sessions<KeyWordType> sessions) { this.sessions = sessions; }
 
     // processor for incoming messages
-    private IncomeText incomeText;
+    private IncomeText<KeyWordType> incomeText;
     private IProcessor<String> incomeTextProcessor;
-    public void setIncomeTextProcessor(IncomeText incomeText) {
+    public void setIncomeTextProcessor(IncomeText<KeyWordType> incomeText) {
         this.incomeText = incomeText;
         this.incomeTextProcessor = (connId, sessionId, parameter) -> {
             logger.LogIncome(connId, sessionId, parameter);
             try {
-                Session session = sessions.getSession(connId, sessionId, connections);
+                Session<KeyWordType> session = sessions.getSession(connId, sessionId, connections);
                 incomeText.processMessage(session, parameter);
             } catch (Exception e) {
-                logger.LogError(connId, sessionId, "incomeText "+e);
+                logger.LogError(connId, sessionId, "Connections.incomeTextProcessor "+e);
             }
         };
     }

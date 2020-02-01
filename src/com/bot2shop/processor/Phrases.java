@@ -69,4 +69,8 @@ public class Phrases<KeyWordType> {
         }
     }
 
+    public Phrase findPhraseByKeywords(KeyWordType[] srchWords) {
+        return null; //TODO
+    }
+
 }

@@ -1,8 +1,9 @@
 /*
-*   Telegram External Connection, v 4.4.0
+*   Telegram External Connection, v 4.6
 *
-* Dependencies: telegrambots-4.4.0-jar-with-dependencies.jar
-* Url: https://github.com/rubenlagus/TelegramBots/releases
+* Dependencies: telegrambots-4.6-jar-with-dependencies.jar
+* Url: https://github.com/rubenlagus/TelegramBots
+* Ftp: https://repo1.maven.org/maven2/org/telegram/telegrambots/
 *
 * HowTo: Download Source code from URL, compile it into .jar with dependencies,
 *        File -> Project Structure  -> Add "Dependencies" (+) -> Select your .jar file
@@ -26,7 +27,7 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
     private String username;
     private String token;
 
-    protected Telegram() {
+    public Telegram() {
         ApiContextInitializer.init();
     }
 
@@ -48,6 +49,17 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
 
     // when something happens, from TelegramLongPollingBot
     public void onUpdateReceived(Update update) {
+        //logErrorProcessor.process(id, "-1", update.toString());
+        /*Update {
+            updateId = 343146593,
+            message = Message {
+                messageId = 12, from = User {
+                    id = 679473869, firstName = 'Григорий', isBot = false, lastName = 'null', userName = 'Grig2', languageCode = 'en'
+                }, date = 1580580183, chat = Chat {
+                    id = 679473869, type = 'private', firstName = 'Григорий', lastName = 'null', userName = 'Grig2'
+                }, text = 'Sample'
+            },
+        }*/
         if (update.hasMessage() && update.getMessage().hasText()) {
             Message inMessage = update.getMessage();
             String text = inMessage.getText();
@@ -60,7 +72,7 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
     public boolean sendText(String sessionId, String textMessage) {
         try {
             SendMessage outMessage = new SendMessage();
-            outMessage.setChatId(Long.getLong(sessionId));
+            outMessage.setChatId(Long.parseLong(sessionId));
             outMessage.setText(textMessage);
             this.execute(outMessage);
             return true;
@@ -73,7 +85,6 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
     // Register to external server, awaiting for users
     public void start() {
         TelegramBotsApi botsApi = new TelegramBotsApi();
-
         try {
             botsApi.registerBot(this);
         } catch (TelegramApiRequestException e) {

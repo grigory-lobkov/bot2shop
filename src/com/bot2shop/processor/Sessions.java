@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-public class Sessions {
+public class Sessions<KeyWordType> {
 
     private ILogger logger;
     public void setLogger(ILogger logger) { this.logger = logger; }
@@ -23,7 +23,7 @@ public class Sessions {
         if(sessKey!=null) return sessions.get(sessKey).refresh();
         // new session
         logger.Log(connId, sessionId, "Start session");
-        Session newSession = new Session(connId, sessionId, connections.get(connId));
+        Session<KeyWordType> newSession = new Session<KeyWordType>(connId, sessionId, connections.get(connId));
         sessKey = sessions.size();
         sessionsIds.put(hashKey, sessKey);
         sessions.add(newSession);
