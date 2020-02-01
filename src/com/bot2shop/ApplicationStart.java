@@ -13,16 +13,19 @@ class ApplicationStart {
     static private Sessions sessions = new Sessions(); // Session list
     static private Connections connections = new Connections(); // Connection list
     static private IDictionary dictionary = new InlineDictionary(); // Connection to dictionary
-    static private Phrases phrases = new Phrases(); // Bot knowledge base
+    static private Phrases<String> phrases = new Phrases<String>(); // Bot knowledge base
+    static private IPreparator<String> preparator = new LowCasePreparator(); // User words and phrases keyword preparator
 
     // Start of the BOT
     public static void main(String[] args) {
         phrases.setLogger(logger);
+        phrases.setPreparator(preparator);
         phrases.setDictionary(dictionary);
-        phrases.process();
-        sessions.setLogger(logger);
+        phrases.processDictionary();
         incomeTextProcessor.setLogger(logger);
-        incomeTextProcessor.setPreparator(new LowCasePreparator()); // each word of user preparator
+        incomeTextProcessor.setPhrases(phrases);
+        incomeTextProcessor.setPreparator(preparator);
+        sessions.setLogger(logger);
         connections.setLogger(logger);
         connections.setSessions(sessions);
         connections.setIncomeTextProcessor(incomeTextProcessor);

@@ -5,12 +5,12 @@ package com.bot2shop.interfaces;
  *   Implementations package: com.bot2shop.prepare
  */
 
-public interface IPreparator<KeyTo, InpTo> {
+public interface IPreparator<KeyWordType> {
 
     // Preparing key words
-    KeyTo prepareKey(String word);
+    KeyWordType prepareKey(String word);
 
     // Preparing user input
-    InpTo prepareInput(String string);
+    KeyWordType[] prepareInput(String string);
 
 }

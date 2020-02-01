@@ -4,7 +4,6 @@ import com.bot2shop.interfaces.IConnection;
 import com.bot2shop.interfaces.ILogger;
 import com.bot2shop.interfaces.IProcessor;
 import com.bot2shop.model.Session;
-import com.bot2shop.processor.IncomeText;
 
 import java.util.ArrayList;
 import java.util.List;

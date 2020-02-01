@@ -8,13 +8,15 @@ public class IncomeText {
 
     // each word of user preparator
     private IPreparator preparator;
-    public void setPreparator(IPreparator preparator) {
-        this.preparator = preparator;
-    }
+    public void setPreparator(IPreparator preparator) { this.preparator = preparator; }
 
     // logger
     private ILogger logger;
     public void setLogger(ILogger logger) { this.logger = logger; }
+
+    // phrases
+    private Phrases phrases;
+    public void setPhrases(Phrases phrases) { this.phrases = phrases; }
 
     // Process incoming user message
     void processMessage(Session session, String inText){
