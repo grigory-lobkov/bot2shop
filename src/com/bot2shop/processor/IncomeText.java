@@ -23,10 +23,11 @@ public class IncomeText<KeyWordType> {
     void processMessage(Session session, String inText){
         KeyWordType[] userWords = preparator.prepareInput(inText);
         Phrase phrase = phrases.findPhraseByKeywords(userWords);
-        //TODO
-        String outText = inText+"!";
-        logger.LogOutcome(session.connId, session.sessionId, outText);
-        session.conn.sendText(session.sessionId, outText);
+        if(phrase!=null) {
+            String outText = phrase.sayText;
+            logger.LogOutcome(session.connId, session.sessionId, outText);
+            session.conn.sendText(session.sessionId, outText);
+        }
     }
 
 }

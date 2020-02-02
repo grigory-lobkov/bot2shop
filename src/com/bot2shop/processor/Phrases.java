@@ -5,9 +5,8 @@ import com.bot2shop.interfaces.ILogger;
 import com.bot2shop.interfaces.IPreparator;
 import com.bot2shop.model.Phrase;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /*
 * Bot knowledge base
@@ -67,10 +66,38 @@ public class Phrases<KeyWordType> {
                 kwlList.add(kwl);
             }
         }
+        // iteration 2
+//        for (Phrase<KeyWordType> phrase:phrases) {
+//            // id -> phrase
+//            phrase.phrase = phrases.get(phrase.phraseId);
+//        }
     }
 
-    public Phrase findPhraseByKeywords(KeyWordType[] srchWords) {
-        return null; //TODO
+    public Phrase<KeyWordType> findPhraseByKeywords(KeyWordType[] srchWords) {
+        Hashtable<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
+
+        // calculate weights
+        for (KeyWordType srchWord: srchWords) {
+            List<KeyWordLink> kwlList = keyWordsTbl.get(srchWord);
+            for (KeyWordLink kwl:kwlList) {
+                Float weight = foundPhrases.get(kwl.phrase);
+                weight = weight == null ? kwl.weight : weight * kwl.weight;
+                foundPhrases.put(kwl.phrase, weight);
+            }
+        }
+
+        // find max weight
+        Float maxWeight = 0f;
+        Phrase<KeyWordType> maxWPhrase = null;
+        for(Map.Entry<Phrase<KeyWordType>, Float> entry : foundPhrases.entrySet()) {
+            Float weight = entry.getValue();
+            if(weight > maxWeight) {
+                maxWeight = weight;
+                maxWPhrase = entry.getKey();
+            }
+        }
+
+        return maxWPhrase;
     }
 
 }
