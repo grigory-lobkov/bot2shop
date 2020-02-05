@@ -3,6 +3,7 @@ package com.bot2shop.model;
 import com.bot2shop.interfaces.IConnection;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 /*
 *  Stores user sessions and it's parameters
@@ -30,5 +31,4 @@ public class Session<KeyWordType> {
         lastAccess = ZonedDateTime.now();
         return this;
     }
-
 }

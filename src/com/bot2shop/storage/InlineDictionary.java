@@ -36,7 +36,8 @@ public class InlineDictionary<KeyWordType> implements IDictionary {
         // Секция приветствия
         roomNow = Room.HELLO;
 
-        Phrase pWelcome = newP("Здравствуйте. Я могу помочь Вам быстро оформить заказ в суши-баре Сакура. Вы можете заказать роллы, суши, горячее и десерты.");
+        Phrase pWelcome = newP("Здравствуйте. Я могу помочь Вам быстро оформить заказ в суши-баре Сакура. Вы можете заказать роллы, суши, горячее и десерты.",
+                new String[]{"/start"});
         pWelcome.isRoomStart = true;
 
         Phrase pHello = newP("Рад приветствовать! Что бы Вы хотели у нас заказать?",
@@ -61,8 +62,15 @@ public class InlineDictionary<KeyWordType> implements IDictionary {
         // Секция заказа
         roomNow = Room.ORDER;
 
-        Phrase pOrder = newP("Выберите одну из категорий нашего ассортимента: роллы, суши, горячее, десерты", new String[]{"Заказать", "Заказ", "Заказывать"});
+        Phrase pOrder = newP("Выберите одну из категорий нашего ассортимента: роллы, суши, горячее, десерты",
+                new String[]{"Заказать", "Заказ", "Заказывать"});
         pOrder.isRoomStart = true;
+
+        // Завершение, выход
+        roomNow = Room.FINISH;
+
+        Phrase pFinish = newP("Спасибо! Приходите к нам ещё!",
+                new String[]{"/quit", "/exit"});
 
         return rawPhraseList;
     }

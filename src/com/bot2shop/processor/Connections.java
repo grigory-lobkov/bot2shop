@@ -3,6 +3,7 @@ package com.bot2shop.processor;
 import com.bot2shop.interfaces.IConnection;
 import com.bot2shop.interfaces.ILogger;
 import com.bot2shop.interfaces.IProcessor;
+import com.bot2shop.model.Phrase;
 import com.bot2shop.model.Session;
 
 import java.util.ArrayList;
@@ -29,12 +30,17 @@ public class Connections<KeyWordType> {
         this.incomeText = incomeText;
         this.incomeTextProcessor = (connId, sessionId, parameter) -> {
             logger.LogIncome(connId, sessionId, parameter);
-            try {
+            //try {
                 Session<KeyWordType> session = sessions.getSession(connId, sessionId, connections);
-                incomeText.processMessage(session, parameter);
-            } catch (Exception e) {
-                logger.LogError(connId, sessionId, "Connections.incomeTextProcessor "+e);
-            }
+                Phrase.Action action = incomeText.processMessage(session, parameter);
+                switch (action) {
+                    case ENDSESSION:
+                        sessions.endSession(connId, sessionId);
+                        break;
+                }
+            //} catch (Exception e) {
+            //    logger.LogError(connId, sessionId, "Connections.incomeTextProcessor "+e);
+            //}
         };
     }
 
