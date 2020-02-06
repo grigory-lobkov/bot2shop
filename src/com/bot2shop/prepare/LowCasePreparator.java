@@ -7,6 +7,8 @@ package com.bot2shop.prepare;
 
 import com.bot2shop.interfaces.IPreparator;
 
+import static com.bot2shop.model.Config.KEYWORD_MULTIPLIER_COST;
+
 public class LowCasePreparator implements IPreparator {
 
     // Lower case key word
@@ -18,7 +20,7 @@ public class LowCasePreparator implements IPreparator {
     // Determine keyword base weight
     @Override
     public float getBaseKeywordWeight(Object keyWord) {
-        return (float) Math.pow(1.1, ((String) keyWord).length());
+        return (float) Math.pow(KEYWORD_MULTIPLIER_COST, ((String) keyWord).length());
     }
 
     // Split user input to words and lower case it

@@ -6,7 +6,8 @@ import com.bot2shop.interfaces.IPreparator;
 import com.bot2shop.model.Phrase;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+
+import static com.bot2shop.model.Config.*;
 
 /*
 * Bot knowledge base
@@ -44,6 +45,8 @@ public class Phrases<KeyWordType> {
         phrases = new Hashtable<Integer, Phrase<KeyWordType>>();
         keyWordsTbl = new Hashtable<KeyWordType, List<KeyWordLink>>();
         List<Phrase<KeyWordType>> phraseList = dictionary.getRawPhraseList();
+        Hashtable<Phrase.Room, List<Phrase>> roomStartPhrases = new Hashtable<Phrase.Room, List<Phrase>>();
+
 
         // iteration 1
         for (Phrase<KeyWordType> phrase : phraseList) {
@@ -64,6 +67,15 @@ public class Phrases<KeyWordType> {
                     keyWordsTbl.put(keyWord, kwlList);
                 }
                 kwlList.add(kwl);
+            }
+            // prepare roomStartPhrases hashtable
+            for (Phrase.Room room : phrase.unknownForRooms) {
+                List<Phrase> roomList = roomStartPhrases.get(room);
+                if (roomList == null) {
+                    roomList = new ArrayList<Phrase>();
+                    roomStartPhrases.put(room, roomList);
+                }
+                roomList.add(phrase);
             }
         }
         // iteration 2
@@ -92,21 +104,35 @@ public class Phrases<KeyWordType> {
     // calculate basic weight of phrase
     public float getPhraseBasicWeight(Phrase<KeyWordType> phrase, Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
         if (phrase.goesAfter == Phrase.GoesAfter.AFTERPREVIOUS) {
-            return lastPhrase != null && phrase.afterPhrases.contains(lastPhrase) ? 6f : 0f;
+            return lastPhrase != null && phrase.afterPhrases.contains(lastPhrase) ? FOLLOW_EXCLUSIVE_PHRASE_COST : 0f;
         }
         float weight = 1f;
         if (lastPhrase != null) {
-            if (phrase.afterPhrases.contains(lastPhrase)) weight *= 3f;
+            if (phrase.afterPhrases.contains(lastPhrase)) weight *= FOLLOW_PHRASE_COST;
         }
         if (phrase.goesAfter == Phrase.GoesAfter.AFTERROOM) {
-            return phrase.room == lastRoom ? weight * 2f : 0;
+            return phrase.room == lastRoom ? weight * FOLLOW_EXCLUSIVE_ROOM_COST : 0;
         }
-        if (phrase.room == lastRoom) weight *= 2f;
+        if (phrase.room == lastRoom) weight *= FOLLOW_ROOM_COST;
 
         return weight;
     }
 
-    // find out, which phrase is the most suitable
+    // find phrase in hashMap with maximum Float weight as value
+    Phrase<KeyWordType> findPhraseHashMaxWeight(Map<Phrase<KeyWordType>, Float> phrasesMap) {
+        Float maxWeight = 0f;
+        Phrase<KeyWordType> maxWPhrase = null;
+        for(Map.Entry<Phrase<KeyWordType>, Float> entry : phrasesMap.entrySet()) {
+            Float weight = entry.getValue();
+            if(weight > maxWeight) {
+                maxWeight = weight;
+                maxWPhrase = entry.getKey();
+            }
+        }
+        return maxWPhrase;
+    }
+
+    // find out, which phrase is the most suitable, using keywords
     public Phrase<KeyWordType> findPhraseByKeywords(KeyWordType[] srchWords, Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
         Hashtable<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
 
@@ -125,40 +151,32 @@ public class Phrases<KeyWordType> {
             }
         }
 
-        // find max weight
-        Float maxWeight = 0f;
-        Phrase<KeyWordType> maxWPhrase = null;
-        for(Map.Entry<Phrase<KeyWordType>, Float> entry : foundPhrases.entrySet()) {
-            Float weight = entry.getValue();
-            if(weight > maxWeight) {
-                maxWeight = weight;
-                maxWPhrase = entry.getKey();
-            }
-        }
-
-        return maxWPhrase;
+        return findPhraseHashMaxWeight(foundPhrases);
     }
-/*
-    // find out, which phrase is the most suitable, without keywords
-    public Phrase<KeyWordType> findPhraseByKeywords(Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
+
+    // find out, which phrase is the most suitable, using previous room and phrase
+    public Phrase<KeyWordType> findPhraseByLast(Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
         Hashtable<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
 
         // calculate weights
-        for (: ) {
-        }
+        //for (: ) { }
 
-        // find max weight
-        Float maxWeight = 0f;
-        Phrase<KeyWordType> maxWPhrase = null;
-        for(Map.Entry<Phrase<KeyWordType>, Float> entry : foundPhrases.entrySet()) {
-            Float weight = entry.getValue();
-            if(weight > maxWeight) {
-                maxWeight = weight;
-                maxWPhrase = entry.getKey();
-            }
-        }
-
-        return maxWPhrase;
+        return findPhraseHashMaxWeight(foundPhrases);
     }
-*/
+
+    // find out, which phrase is the most suitable
+    public Phrase<KeyWordType> findPhrase(KeyWordType[] srchWords, Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
+        // search by keywords
+        Phrase phrase = findPhraseByKeywords(srchWords, lastRoom, lastPhrase);
+        if (phrase != null) {
+            return phrase;
+        }
+        // search by previous state
+        phrase = findPhraseByLast(lastRoom, lastPhrase);
+        if (phrase != null) {
+            return phrase;
+        }
+        return null;
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.bot2shop.model;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
 
 /*
      Phrases, we send to user
@@ -18,12 +19,11 @@ public class Phrase<KeyWordType> {
     public Integer id = nextId++; // autoincrement identifier of Phrase for Hashtable
 
     public String[] keyWords; // key words, lead to Action
-    public Hashtable<KeyWordType, Float> keyWordsTbl; // key words, lead to Action
+    public Map<KeyWordType, Float> keyWordsTbl; // key words with weight as value, lead to Action
     public Integer[] nextPhrasesId = {}; // Phrase's expected after this Phrase
     public Phrase[] nextPhrases = {}; // Phrase's expected after this Phrase
-    public boolean showOnlyOnce = false; // show this phrase only once in session
-    public boolean strictQuestion = false; // allows only after-phrase Phrases, required to set afterPhraseUnknownId to some children
-    public boolean stayPreviousPhrase = false; // if True, this phrase will not override lastPhrase
+    public boolean strictQuestion = false; // allows only after-phrase Phrases, required to set nextPhrasesIfUnknownId to some children
+    public boolean canBeLast = true; // if False, this phrase will not override lastPhrase
 
     public GoesAfter goesAfter = GoesAfter.AFTERALL; // after what we are expecting this Phrase
     public int chance; // chance to get it
@@ -38,15 +38,18 @@ public class Phrase<KeyWordType> {
     public boolean isRoomStart = false; // this Phrase is a starter of this Room
     public Room roomNext = null; // speaking room, if this Phrase found
 
-    public HashSet<Phrase> afterPhrases = new HashSet<Phrase>(); // after what Phrases this goes
+    public Set<Phrase> afterPhrases = new HashSet<Phrase>(); // after what Phrases this goes
 
-    public Room roomUnknown = null; // this Phrase is a Room unknown phrase
-    public Integer afterPhraseUnknownId = -1; // id of Phrase if unknown
-    public Phrase afterPhraseUnknown = null; // this Phrase is a Room unknown phrase
+    public Room[] unknownForRooms = {}; // this Phrase is a Room's unknown phrase
+    public Integer[] nextPhrasesIfUnknownId = {}; // id of Phrase if unknown
+    public Phrase[] nextPhrasesIfUnknown = {}; // next Phrase if unknown
 
-    public int timeoutSec = -1; // how much seconds passed to timeout
+    public int timeoutSec = -1; // how much seconds passed to timeout // TODO: implement some watchdog
     //public int timeoutPhraseId = -1; // where to go after timeout
     //public Phrase timeoutPhrase = null; // where to go after timeout
+    public boolean showOnlyOnce = false; // show this phrase only once in session // TODO: Session, Phrases support
+    public int showChance = 100; // show this phrase in certain probability (1-100) // TODO: Session, Phrases support
+
 
     @Override
     public boolean equals(Object o) { // for Hashtable
@@ -54,7 +57,6 @@ public class Phrase<KeyWordType> {
         if (o == null || getClass() != o.getClass()) return false;
         return id == ((Phrase) o).id;
     }
-
     @Override
     public int hashCode() { // for Hashtable
         return id;

@@ -46,17 +46,21 @@ public class InlineDictionary<KeyWordType> implements IDictionary {
 
         Phrase pHelloTO = newP("У нас очень вкусные роллы! Их изготавливает повар с черным поясом по Японской кухне!");
         pHelloTO.timeoutSec = 30; // 30 sec
+        pHelloTO.showChance = 20;
         pHelloTO.showOnlyOnce = true;
 
         pHelloTO = newP("Наш повар сделает себе харакири, если вы найдете недостаток в его творениях!");
         pHelloTO.timeoutSec = 60; // 1 min
+        pHelloTO.showChance = 20;
         pHelloTO.showOnlyOnce = true;
 
         pHelloTO = newP("У нас бесплатная доставка при заказе от 500 рублей!");
         pHelloTO.timeoutSec = 300; // 5 min
+        pHelloTO.showChance = 20;
         pHelloTO.showOnlyOnce = true;
 
         pHelloTO = newP("Тут Вы можете заказать очень вкусные роллы, отличные суши, ароматное горячее.");
+        pHelloTO.showChance = 20;
         pHelloTO.timeoutSec = 600; // 10 min
 
         // Секция заказа
