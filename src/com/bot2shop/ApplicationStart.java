@@ -9,7 +9,7 @@ import com.bot2shop.storage.*;
 class ApplicationStart<KeyWordType> {
 
     private ILogger logger = new ConsoleLogger(); // log anything
-    private IncomeText<KeyWordType> incomeTextProcessor = new IncomeText<KeyWordType>(); // processor for incoming messages
+    private MakeAction<KeyWordType> makeActionProcessor = new MakeAction<KeyWordType>(); // processor for incoming messages
     private Sessions<KeyWordType> sessions = new Sessions<KeyWordType>(); // Session list
     private Connections<KeyWordType> connections = new Connections<KeyWordType>(); // Connection list
     private IDictionary dictionary = new InlineDictionary(); // Connection to dictionary
@@ -22,13 +22,13 @@ class ApplicationStart<KeyWordType> {
         phrases.setPreparator(preparator);
         phrases.setDictionary(dictionary);
         phrases.processDictionary();
-        incomeTextProcessor.setLogger(logger);
-        incomeTextProcessor.setPhrases(phrases);
-        incomeTextProcessor.setPreparator(preparator);
+        makeActionProcessor.setLogger(logger);
+        makeActionProcessor.setPhrases(phrases);
+        makeActionProcessor.setPreparator(preparator);
         sessions.setLogger(logger);
         connections.setLogger(logger);
         connections.setSessions(sessions);
-        connections.setIncomeTextProcessor(incomeTextProcessor);
+        connections.setIncomeTextProcessor(makeActionProcessor);
         // Proxy if needed (for Tor browser in memory):
 //        System.getProperties().put("proxySet", "true");
 //        System.getProperties().put("socksProxyHost", "127.0.0.1");

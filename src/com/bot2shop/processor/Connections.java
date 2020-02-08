@@ -24,23 +24,23 @@ public class Connections<KeyWordType> {
     public void setSessions(Sessions<KeyWordType> sessions) { this.sessions = sessions; }
 
     // processor for incoming messages
-    private IncomeText<KeyWordType> incomeText;
+    private MakeAction<KeyWordType> makeAction;
     private IProcessor<String> incomeTextProcessor;
-    public void setIncomeTextProcessor(IncomeText<KeyWordType> incomeText) {
-        this.incomeText = incomeText;
+    public void setIncomeTextProcessor(MakeAction<KeyWordType> makeAction) {
+        this.makeAction = makeAction;
         this.incomeTextProcessor = (connId, sessionId, parameter) -> {
             logger.LogIncome(connId, sessionId, parameter);
-            //try {
+            try {
                 Session<KeyWordType> session = sessions.getSession(connId, sessionId, connections);
-                Phrase.Action action = incomeText.processMessage(session, parameter);
+                Phrase.Action action = makeAction.processMessage(session, parameter);
                 switch (action) {
                     case ENDSESSION:
                         sessions.endSession(connId, sessionId);
                         break;
                 }
-            //} catch (Exception e) {
-            //    logger.LogError(connId, sessionId, "Connections.incomeTextProcessor "+e);
-            //}
+            } catch (Exception e) {
+                logger.LogError(connId, sessionId, "Connections.incomeTextProcessor "+e);
+            }
         };
     }
 
