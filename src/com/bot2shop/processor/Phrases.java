@@ -24,9 +24,10 @@ public class Phrases<KeyWordType> {
         }
     }
 
-    private Hashtable<Integer, Phrase<KeyWordType>> phrases;
-    private Hashtable<KeyWordType, List<KeyWordLink>> keyWordsTbl;
-    private Hashtable<Phrase.Room, List<Phrase>> roomStartPhrases;
+    private Map<Integer, Phrase<KeyWordType>> phrases;
+    private Map<KeyWordType, List<KeyWordLink>> keyWordsTbl;
+    private Map<Phrase.Room, List<Phrase>> roomStartPhrases;
+    private Map<Phrase<KeyWordType>, List<Phrase>> lastPhrasePhrases;
 
     // logger
     private ILogger logger;
@@ -45,7 +46,8 @@ public class Phrases<KeyWordType> {
         phrases = new Hashtable<Integer, Phrase<KeyWordType>>();
         keyWordsTbl = new Hashtable<KeyWordType, List<KeyWordLink>>();
         List<Phrase<KeyWordType>> phraseList = dictionary.getRawPhraseList();
-        Hashtable<Phrase.Room, List<Phrase>> roomStartPhrases = new Hashtable<Phrase.Room, List<Phrase>>();
+        roomStartPhrases = new Hashtable<Phrase.Room, List<Phrase>>();
+        lastPhrasePhrases = new Hashtable<Phrase<KeyWordType>, List<Phrase>>();
 
 
         // iteration 1
@@ -98,6 +100,17 @@ public class Phrases<KeyWordType> {
                 }
                 phrase.nextPhrasesId = (Integer[]) added.toArray();
             }
+            // prepare lastPhrasePhrases hashtable
+            //Hashtable<Phrase<KeyWordType>, List<Phrase>>();
+            if(phrase.nextPhrasesIfUnknownId.length > 0) {
+                List<Phrase> phrases = <Phrase>Arrays.asList(phrase.nextPhrasesIfUnknownId);
+                    if (roomList == null) {
+                        roomList = new ArrayList<Phrase>();
+                        roomStartPhrases.put(room, roomList);
+                    }
+                    roomList.add(phrase);
+                }
+            }
         }
     }
 
@@ -132,51 +145,89 @@ public class Phrases<KeyWordType> {
         return maxWPhrase;
     }
 
+    // find phrase in hashMap, sorted from maximum to minimum weight as value
+    Phrase<KeyWordType>[] findPhraseOrdered(Map<Phrase<KeyWordType>, Float> phrasesMap) {
+        // create temporary list
+        List<Map.Entry<Phrase<KeyWordType>, Float>> entries = new ArrayList<Map.Entry<Phrase<KeyWordType>, Float>>(
+                phrasesMap.entrySet()
+        );
+        // sort list
+        Collections.sort(entries, new Comparator<Map.Entry<Phrase<KeyWordType>, Float>>() {
+            public int compare(Map.Entry<Phrase<KeyWordType>, Float> a, Map.Entry<Phrase<KeyWordType>, Float> b) {
+                return -Float.compare(b.getValue(), a.getValue());
+            }
+        });
+        // generate array
+        int i = 0;
+        Phrase<KeyWordType>[] result = new Phrase[entries.size()];
+        for (Map.Entry<Phrase<KeyWordType>, Float> e : entries) {
+            result[i++] = e.getKey();
+        }
+        return result;
+    }
+
     // find out, which phrase is the most suitable, using keywords
-    public Phrase<KeyWordType> findPhraseByKeywords(KeyWordType[] srchWords, Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
-        Hashtable<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
+    public Phrase<KeyWordType>[] findPhraseByKeywords(KeyWordType[] srchWords, Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
+        Map<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
 
         // calculate weights
         for (KeyWordType srchWord: srchWords) {
             List<KeyWordLink> kwlList = keyWordsTbl.get(srchWord);
             if (kwlList != null) {
                 for (KeyWordLink kwl : kwlList) {
-                    Float weight = foundPhrases.get(kwl.phrase);
-                    if(weight == null) {
-                        weight = getPhraseBasicWeight(kwl.phrase, lastRoom, lastPhrase);
+                    if (kwl.phrase.goesAfter != Phrase.GoesAfter.AFTERPREVIOUSSTRICT || kwl.phrase.afterPhrases.contains(lastPhrase)) {
+                        Float weight = foundPhrases.get(kwl.phrase);
+                        if (weight == null) {
+                            weight = getPhraseBasicWeight(kwl.phrase, lastRoom, lastPhrase);
+                        }
+                        weight = weight * kwl.weight;
+                        foundPhrases.put(kwl.phrase, weight);
                     }
-                    weight = weight * kwl.weight;
-                    foundPhrases.put(kwl.phrase, weight);
+
                 }
             }
         }
 
-        return findPhraseHashMaxWeight(foundPhrases);
+        // TODO: add cache for the same existing keywords, lastRoom and lastPhrase
+
+        // sort by weight and return array
+        return findPhraseOrdered(foundPhrases);
     }
 
     // find out, which phrase is the most suitable, using previous room and phrase
-    public Phrase<KeyWordType> findPhraseByLast(Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
+    public Phrase<KeyWordType>[] findPhraseByLast(Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
         Hashtable<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
 
         // calculate weights
-        //for (: ) { }
+        List<Phrase> phrases = roomStartPhrases.get(lastRoom);
+        if(phrases!=null) {
+            for (Phrase phrase: phrases) {
+                Float weight = foundPhrases.get(phrase);
+                if(weight!=null) {
+                    weight = FOLLOW_EXCLUSIVE_ROOM_COST;
+                }
+                weight = weight * FOLLOW_EXCLUSIVE_ROOM_COST;
+                foundPhrases.put(phrase, weight);
+            }
+        }
 
-        return findPhraseHashMaxWeight(foundPhrases);
+        // sort by weight and return array
+        return findPhraseOrdered(foundPhrases);
     }
 
     // find out, which phrase is the most suitable
-    public Phrase<KeyWordType> findPhrase(KeyWordType[] srchWords, Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
-        // search by keywords
-        Phrase phrase = findPhraseByKeywords(srchWords, lastRoom, lastPhrase);
-        if (phrase != null) {
-            return phrase;
-        }
-        // search by previous state
-        phrase = findPhraseByLast(lastRoom, lastPhrase);
-        if (phrase != null) {
-            return phrase;
-        }
-        return null;
-    }
+//    public Phrase<KeyWordType> findPhrase(KeyWordType[] srchWords, Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
+//        // search by keywords
+//        Phrase phrase = findPhraseByKeywords(srchWords, lastRoom, lastPhrase);
+//        if (phrase != null) {
+//            return phrase;
+//        }
+//        // search by previous state
+//        phrase = findPhraseByLast(lastRoom, lastPhrase);
+//        if (phrase != null) {
+//            return phrase;
+//        }
+//        return null;
+//    }
 
 }

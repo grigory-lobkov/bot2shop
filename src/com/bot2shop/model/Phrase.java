@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class Phrase<KeyWordType> {
 
-    public enum GoesAfter {AFTERPREVIOUS, AFTERROOM, AFTERALL}
+    public enum GoesAfter {AFTERPREVIOUSSTRICT, AFTERPREVIOUS, AFTERROOM, AFTERALL}
 
     public enum Action {SAY, ADDTOCART, SAVEINFO, ENDSESSION}
 
@@ -22,7 +22,7 @@ public class Phrase<KeyWordType> {
     public Map<KeyWordType, Float> keyWordsTbl; // key words with weight as value, lead to Action
     public Integer[] nextPhrasesId = {}; // Phrase's expected after this Phrase
     public Phrase[] nextPhrases = {}; // Phrase's expected after this Phrase
-    public boolean strictQuestion = false; // allows only after-phrase Phrases, required to set nextPhrasesIfUnknownId to some children
+    //public boolean strictQuestion = false; // allows only after-phrase Phrases, required to set nextPhrasesIfUnknownId to some children
     public boolean canBeLast = true; // if False, this phrase will not override lastPhrase
 
     public GoesAfter goesAfter = GoesAfter.AFTERALL; // after what we are expecting this Phrase
@@ -42,7 +42,7 @@ public class Phrase<KeyWordType> {
 
     public Room[] unknownForRooms = {}; // this Phrase is a Room's unknown phrase
     public Integer[] nextPhrasesIfUnknownId = {}; // id of Phrase if unknown
-    public Phrase[] nextPhrasesIfUnknown = {}; // next Phrase if unknown
+    public Phrase[] nextPhrasesIfUnknown; // next Phrase if unknown
 
     public int timeoutSec = -1; // how much seconds passed to timeout // TODO: implement some watchdog
     //public int timeoutPhraseId = -1; // where to go after timeout

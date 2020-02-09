@@ -49,9 +49,9 @@ public class MakeAction<KeyWordType> {
     // Process incoming user message
     Phrase.Action processMessage(Session session, String inText) {
         KeyWordType[] userWords = preparator.prepareInput(inText);
-        Phrase phrase = phrases.findPhrase(userWords, session.lastRoom, session.lastPhrase);
-        if (phrase != null) {
-            return doPhraseAction(phrase, session);
+        Phrase[] phrase = phrases.findPhraseByKeywords(userWords, session.lastRoom, session.lastPhrase);
+        if (phrase.length > 0) { // todo: check, phrase able to show in session
+            return doPhraseAction(phrase[0], session);
         }
         return null;
     }
