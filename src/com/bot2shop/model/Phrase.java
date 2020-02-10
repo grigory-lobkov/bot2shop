@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class Phrase<KeyWordType> {
 
-    public enum GoesAfter {AFTERPREVIOUSSTRICT, AFTERPREVIOUS, AFTERROOM, AFTERALL}
+    public enum GoesAfter {AFTERPREVIOUSSTRICT, AFTERPREVIOUS, AFTERROOMSTRICT, AFTERROOM, AFTERALL}
 
     public enum Action {SAY, ADDTOCART, SAVEINFO, ENDSESSION}
 
@@ -21,12 +21,11 @@ public class Phrase<KeyWordType> {
     public String[] keyWords; // key words, lead to Action
     public Map<KeyWordType, Float> keyWordsTbl; // key words with weight as value, lead to Action
     public Integer[] nextPhrasesId = {}; // Phrase's expected after this Phrase
-    public Phrase[] nextPhrases = {}; // Phrase's expected after this Phrase
-    //public boolean strictQuestion = false; // allows only after-phrase Phrases, required to set nextPhrasesIfUnknownId to some children
+    public Phrase<KeyWordType>[] nextPhrases; // Phrase's expected after this Phrase
+    public boolean strictQuestion = false; // allows only after-phrase Phrases, required to set nextPhrasesIfUnknownId to some children
     public boolean canBeLast = true; // if False, this phrase will not override lastPhrase
 
     public GoesAfter goesAfter = GoesAfter.AFTERALL; // after what we are expecting this Phrase
-    public int chance; // chance to get it
 
     public Action action = null; // this word means this Action
     public String sayText = null; // Action=SAY, what to say
@@ -38,17 +37,17 @@ public class Phrase<KeyWordType> {
     public boolean isRoomStart = false; // this Phrase is a starter of this Room
     public Room roomNext = null; // speaking room, if this Phrase found
 
-    public Set<Phrase> afterPhrases = new HashSet<Phrase>(); // after what Phrases this goes
+    public Set<Phrase<KeyWordType>> afterPhrases = new HashSet<Phrase<KeyWordType>>(); // after what Phrases this goes
 
     public Room[] unknownForRooms = {}; // this Phrase is a Room's unknown phrase
     public Integer[] nextPhrasesIfUnknownId = {}; // id of Phrase if unknown
-    public Phrase[] nextPhrasesIfUnknown; // next Phrase if unknown
+    public Phrase<KeyWordType>[] nextPhrasesIfUnknown; // next Phrase if unknown
 
     public int timeoutSec = -1; // how much seconds passed to timeout // TODO: implement some watchdog
     //public int timeoutPhraseId = -1; // where to go after timeout
     //public Phrase timeoutPhrase = null; // where to go after timeout
-    public boolean showOnlyOnce = false; // show this phrase only once in session // TODO: Session, Phrases support
-    public int showChance = 100; // show this phrase in certain probability (1-100) // TODO: Session, Phrases support
+    public boolean showOnlyOnce = false; // show this phrase only once in session
+    public int showChance = 100; // show this phrase in certain probability (1-100)
 
 
     @Override

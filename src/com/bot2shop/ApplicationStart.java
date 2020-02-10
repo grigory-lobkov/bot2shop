@@ -12,7 +12,7 @@ class ApplicationStart<KeyWordType> {
     private MakeAction<KeyWordType> makeActionProcessor = new MakeAction<KeyWordType>(); // processor for incoming messages
     private Sessions<KeyWordType> sessions = new Sessions<KeyWordType>(); // Session list
     private Connections<KeyWordType> connections = new Connections<KeyWordType>(); // Connection list
-    private IDictionary dictionary = new InlineDictionary(); // Connection to dictionary
+    private IDictionary<KeyWordType> dictionary = new InlineDictionary<KeyWordType>(); // Connection to dictionary
     private Phrases<KeyWordType> phrases = new Phrases<KeyWordType>(); // Bot knowledge base, <KeyWordType>
     private IPreparator<KeyWordType> preparator = new LowCasePreparator(); // User words and phrases keyword preparator, <KeyWordType>
 

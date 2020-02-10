@@ -5,7 +5,12 @@ import com.bot2shop.interfaces.IPreparator;
 import com.bot2shop.model.Phrase;
 import com.bot2shop.model.Session;
 
+import java.util.SplittableRandom;
+
+
 public class MakeAction<KeyWordType> {
+
+    private SplittableRandom random = new SplittableRandom();
 
     // each word of user preparator
     private IPreparator<KeyWordType> preparator;
@@ -20,7 +25,7 @@ public class MakeAction<KeyWordType> {
     public void setPhrases(Phrases phrases) { this.phrases = phrases; }
 
     // do Phrase Action
-    Phrase.Action doPhraseAction(Phrase phrase, Session session) {
+    private Phrase.Action doPhraseAction(Phrase phrase, Session session) {
         Phrase.Action result = null;
         switch (phrase.action) {
             case SAY:
@@ -39,7 +44,7 @@ public class MakeAction<KeyWordType> {
     }
 
     // do phrase action Say
-    Phrase.Action doPhraseActionSAY(Phrase phrase, Session session) {
+    private Phrase.Action doPhraseActionSAY(Phrase phrase, Session session) {
         String outText = phrase.sayText;
         logger.LogOutcome(session.connId, session.sessionId, outText);
         session.conn.sendText(session.sessionId, outText);
@@ -48,10 +53,42 @@ public class MakeAction<KeyWordType> {
 
     // Process incoming user message
     Phrase.Action processMessage(Session session, String inText) {
+
+        // search by keywords
         KeyWordType[] userWords = preparator.prepareInput(inText);
-        Phrase[] phrase = phrases.findPhraseByKeywords(userWords, session.lastRoom, session.lastPhrase);
-        if (phrase.length > 0) { // todo: check, phrase able to show in session
-            return doPhraseAction(phrase[0], session);
+        Phrase<KeyWordType>[] foundPhrases = phrases.findPhraseByKeywords(userWords, session.lastRoom, session.lastPhrase);
+        if (foundPhrases.length > 0) {
+            for (Phrase p: foundPhrases) {
+                if(p.showOnlyOnce) {
+                    if(!session.getShown(p)) continue;
+                }
+                if(p.showChance < 100) {
+                    int rnd = random.nextInt(100);
+                    if(rnd>=p.showChance) continue;
+                }
+                if(p.showOnlyOnce) {
+                    session.setShown(p);
+                }
+                return doPhraseAction(p, session);
+            }
+        }
+
+        // search by last state
+        foundPhrases = phrases.findPhraseByLast(session.lastRoom, session.lastPhrase);
+        if (foundPhrases.length > 0) {
+            for (Phrase p: foundPhrases) {
+                if(p.showOnlyOnce) {
+                    if(!session.getShown(p)) continue;
+                }
+                if(p.showChance < 100) {
+                    int rnd = random.nextInt(100);
+                    if(rnd>=p.showChance) continue;
+                }
+                if(p.showOnlyOnce) {
+                    session.setShown(p);
+                }
+                return doPhraseAction(p, session);
+            }
         }
         return null;
     }

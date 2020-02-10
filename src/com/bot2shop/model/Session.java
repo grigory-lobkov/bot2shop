@@ -3,7 +3,8 @@ package com.bot2shop.model;
 import com.bot2shop.interfaces.IConnection;
 
 import java.time.ZonedDateTime;
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
 *  Stores user sessions and it's parameters
@@ -31,4 +32,9 @@ public class Session<KeyWordType> {
         lastAccess = ZonedDateTime.now();
         return this;
     }
+
+    static private Set<Phrase> shownPhrases = new HashSet<>(); // how many times Phrase shown
+    public boolean getShown(Phrase phrase) { return shownPhrases.contains(phrase); }
+    public void setShown(Phrase phrase) { shownPhrases.add(phrase); }
+
 }

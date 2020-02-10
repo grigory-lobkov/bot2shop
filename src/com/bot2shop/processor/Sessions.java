@@ -2,23 +2,23 @@ package com.bot2shop.processor;
 
 import com.bot2shop.interfaces.IConnection;
 import com.bot2shop.interfaces.ILogger;
+import com.bot2shop.model.Phrase;
 import com.bot2shop.model.Session;
 
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 public class Sessions<KeyWordType> {
 
     private ILogger logger;
     public void setLogger(ILogger logger) { this.logger = logger; }
 
-    static private Hashtable<String, Session> sessions = new Hashtable<>(); // users sessions identifiers hashtable
+    static private Map<String, Session> sessions = new Hashtable<>(); // users sessions identifiers hashtable
 
     String getHashKey(int connId, String sessionId) {
         return connId + "-" + sessionId;
     }
 
-    Session getSession(int connId, String sessionId, List<IConnection> connections) {
+    Session<KeyWordType> getSession(int connId, String sessionId, List<IConnection> connections) {
         // check if exists
         String hashKey = getHashKey(connId, sessionId);
         Session<KeyWordType> session = sessions.get(hashKey);
@@ -40,6 +40,5 @@ public class Sessions<KeyWordType> {
             sessions.remove(hashKey);
         }
     }
-
 
 }

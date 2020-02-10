@@ -24,10 +24,8 @@ public class Connections<KeyWordType> {
     public void setSessions(Sessions<KeyWordType> sessions) { this.sessions = sessions; }
 
     // processor for incoming messages
-    private MakeAction<KeyWordType> makeAction;
     private IProcessor<String> incomeTextProcessor;
     public void setIncomeTextProcessor(MakeAction<KeyWordType> makeAction) {
-        this.makeAction = makeAction;
         this.incomeTextProcessor = (connId, sessionId, parameter) -> {
             logger.LogIncome(connId, sessionId, parameter);
             try {
