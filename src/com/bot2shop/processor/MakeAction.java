@@ -57,7 +57,7 @@ public class MakeAction<KeyWordType> {
         // search by keywords
         KeyWordType[] userWords = preparator.prepareInput(inText);
         Phrase<KeyWordType>[] foundPhrases = phrases.findPhraseByKeywords(userWords, session.lastRoom, session.lastPhrase);
-        if (foundPhrases.length > 0) {
+        if (foundPhrases != null && foundPhrases.length > 0) {
             for (Phrase p: foundPhrases) {
                 if(p.showOnlyOnce) {
                     if(!session.getShown(p)) continue;

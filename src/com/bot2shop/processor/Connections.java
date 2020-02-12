@@ -31,13 +31,21 @@ public class Connections<KeyWordType> {
             try {
                 Session<KeyWordType> session = sessions.getSession(connId, sessionId, connections);
                 Phrase.Action action = makeAction.processMessage(session, parameter);
-                switch (action) {
-                    case ENDSESSION:
-                        sessions.endSession(connId, sessionId);
-                        break;
+                if (action != null) {
+                    switch (action) {
+                        case ENDSESSION:
+                            sessions.endSession(connId, sessionId);
+                            break;
+                    }
                 }
             } catch (Exception e) {
-                logger.LogError(connId, sessionId, "Connections.incomeTextProcessor "+e);
+                StringBuffer sb = new StringBuffer(500);
+                StackTraceElement[] st = e.getStackTrace();
+                sb.append(e.getClass().getName() + ": " + e.getMessage() + "\n");
+                for (int i = 0; i < st.length; i++) {
+                    sb.append("\t at " + st[i].toString() + "\n");
+                }
+                logger.LogError(connId, sessionId, "Connections.incomeTextProcessor " + sb.toString());
             }
         };
     }

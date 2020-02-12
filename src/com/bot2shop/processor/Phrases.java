@@ -46,14 +46,16 @@ public class Phrases<KeyWordType> {
         phrases = new Hashtable<Integer, Phrase<KeyWordType>>();
         keyWordsTbl = new Hashtable<KeyWordType, List<KeyWordLink>>();
         List<Phrase<KeyWordType>> phraseList = dictionary.getRawPhraseList();
-        roomStartPhrases = new Hashtable<Phrase.Room, List<Phrase>>();
-        lastPhrasePhrases = new Hashtable<Phrase<KeyWordType>, List<Phrase>>();
+        roomStartPhrases = new Hashtable<Phrase.Room, List<Phrase<KeyWordType>>>();
+        lastPhrasePhrases = new Hashtable<Phrase<KeyWordType>, List<Phrase<KeyWordType>>>();
 
 
         // iteration 1
         for (Phrase<KeyWordType> phrase : phraseList) {
+
             // prepare phrases hashtable
             phrases.put(phrase.id, phrase);
+
             // prepare key words
             phrase.keyWordsTbl = new Hashtable<KeyWordType, Float>();
             for (String key : phrase.keyWords) {
@@ -70,18 +72,21 @@ public class Phrases<KeyWordType> {
                 }
                 kwlList.add(kwl);
             }
+
             // prepare roomStartPhrases hashtable
             for (Phrase.Room room : phrase.unknownForRooms) {
-                List<Phrase> roomList = roomStartPhrases.get(room);
+                List<Phrase<KeyWordType>> roomList = roomStartPhrases.get(room);
                 if (roomList == null) {
-                    roomList = new ArrayList<Phrase>();
+                    roomList = new ArrayList<Phrase<KeyWordType>>();
                     roomStartPhrases.put(room, roomList);
                 }
                 roomList.add(phrase);
             }
         }
+
         // iteration 2
         for (Phrase<KeyWordType> phrase : phraseList) {
+
             // prepare nextPhrases, afterPhrases
             if (phrase.nextPhrasesId.length > 0) {
                 HashSet<Phrase<KeyWordType>> added = new HashSet<Phrase<KeyWordType>>();
@@ -100,11 +105,11 @@ public class Phrases<KeyWordType> {
                 }
                 phrase.nextPhrasesId = (Integer[]) added.toArray();
             }*/
+
             // prepare lastPhrasePhrases hashtable
-            //Hashtable<Phrase<KeyWordType>, List<Phrase>>();
             if (phrase.nextPhrasesIfUnknownId.length > 0) {
                 int len = phrase.nextPhrasesIfUnknownId.length;
-                Phrase<KeyWordType>[] phs = new Phrase<KeyWordType>[len];
+                Phrase<KeyWordType>[] phs = (Phrase<KeyWordType>[]) new Object[len];
                 for (int i = 0; i < len; i++) {
                     phs[i] = phrases.get(phrase.nextPhrasesIfUnknownId[i]);
                 }
@@ -146,16 +151,19 @@ public class Phrases<KeyWordType> {
 
     // find phrase in hashMap, sorted from maximum to minimum weight as value
     Phrase<KeyWordType>[] findPhraseOrdered(Map<Phrase<KeyWordType>, Float> phrasesMap) {
+
         // create temporary list
         List<Map.Entry<Phrase<KeyWordType>, Float>> entries = new ArrayList<Map.Entry<Phrase<KeyWordType>, Float>>(
                 phrasesMap.entrySet()
         );
+
         // sort list
         Collections.sort(entries, new Comparator<Map.Entry<Phrase<KeyWordType>, Float>>() {
             public int compare(Map.Entry<Phrase<KeyWordType>, Float> a, Map.Entry<Phrase<KeyWordType>, Float> b) {
                 return -Float.compare(b.getValue(), a.getValue());
             }
         });
+
         // generate array
         int i = 0;
         Phrase<KeyWordType>[] result = new Phrase[entries.size()];
@@ -200,8 +208,8 @@ public class Phrases<KeyWordType> {
         Hashtable<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
 
         // calculate after-phrase weights
-        if(lastPhrase.nextPhrasesIfUnknown!=null) {
-            for (Phrase phrase: lastPhrase.nextPhrasesIfUnknown) {
+        if (lastPhrase != null && lastPhrase.nextPhrasesIfUnknown != null) {
+            for (Phrase phrase : lastPhrase.nextPhrasesIfUnknown) {
                 Float weight = foundPhrases.get(phrase);
                 weight = weight != null ? FOLLOW_EXCLUSIVE_PHRASE_COST : weight * FOLLOW_EXCLUSIVE_PHRASE_COST;
                 foundPhrases.put(phrase, weight);
@@ -209,12 +217,14 @@ public class Phrases<KeyWordType> {
         }
 
         // calculate after-room weights
-        List<Phrase<KeyWordType>> phrases = roomStartPhrases.get(lastRoom);
-        if(phrases!=null) {
-            for (Phrase phrase: phrases) {
-                Float weight = foundPhrases.get(phrase);
-                weight = weight != null ? FOLLOW_EXCLUSIVE_ROOM_COST : weight * FOLLOW_EXCLUSIVE_ROOM_COST;
-                foundPhrases.put(phrase, weight);
+        if (lastRoom != null) {
+            List<Phrase<KeyWordType>> phrases = roomStartPhrases.get(lastRoom);
+            if (phrases != null) {
+                for (Phrase phrase : phrases) {
+                    Float weight = foundPhrases.get(phrase);
+                    weight = weight != null ? FOLLOW_EXCLUSIVE_ROOM_COST : weight * FOLLOW_EXCLUSIVE_ROOM_COST;
+                    foundPhrases.put(phrase, weight);
+                }
             }
         }
 
