@@ -29,7 +29,7 @@ public interface IConnection {
     //int getConnId();
 
     // Set processor to log errors
-    void setErrorProcessor(IProcessor<String> logErrorProcessor);
+    void setErrorProcessor(IProcessor<Exception> logErrorProcessor);
 
     // Set processor to process income user messages
     void setIncomeTextProcessor(IProcessor<String> incomeTextProcessor);

@@ -32,8 +32,9 @@ public class ConsoleChat implements IConnection {
     //public int getConnId() { return id; }
 
     // Set processor to log errors
-    private IProcessor<String> logErrorProcessor;
-    public void setErrorProcessor(IProcessor<String> logErrorProcessor) {
+    private IProcessor<Exception> logErrorProcessor;
+
+    public void setErrorProcessor(IProcessor<Exception> logErrorProcessor) {
         this.logErrorProcessor = logErrorProcessor;
     }
 

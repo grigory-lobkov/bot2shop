@@ -13,6 +13,7 @@ package com.bot2shop.ext;
 
 import com.bot2shop.interfaces.IConnection;
 import com.bot2shop.interfaces.IProcessor;
+import com.google.common.base.Strings;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -34,9 +35,8 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
     // Set base parameters for connection (api keys, tokens, passwords, etc)
     public void setup(String... params) {
         if (params.length != 2) {
-            String errText = "Telegram. Not all parameters sent, need: \"username\", \"token\"";
-            logErrorProcessor.process(id, "", errText);
-            System.out.println(errText); // TODO: raise error
+            Exception e = new RuntimeException("Telegram. Not all parameters sent, need: \"username\", \"token\"");
+            logErrorProcessor.process(id, "", new RuntimeException(e));
         } else {
             username = params[0];
             token = params[1];
@@ -77,13 +77,20 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
             this.execute(outMessage);
             return true;
         } catch (TelegramApiException e) {
-            logErrorProcessor.process(id, sessionId, e.getMessage());
+            logErrorProcessor.process(id, sessionId, e);
         }
         return false;
     }
 
     // Register to external server, awaiting for users
     public void start() {
+        // check, if parameters set
+        if (Strings.isNullOrEmpty(token) || Strings.isNullOrEmpty(username)) {
+            Exception e = new RuntimeException("Telegram. Not all parameters bound, use first: setup(\"username\", \"token\")");
+            logErrorProcessor.process(id, "", new RuntimeException(e));
+            return;
+        }
+        // init telegram
         TelegramBotsApi botsApi = new TelegramBotsApi();
         try {
             botsApi.registerBot(this);
@@ -104,8 +111,9 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
     //public int getConnId() { return id; }
 
     // Set processor to log errors
-    private IProcessor<String> logErrorProcessor;
-    public void setErrorProcessor(IProcessor<String> logErrorProcessor) {
+    private IProcessor<Exception> logErrorProcessor;
+
+    public void setErrorProcessor(IProcessor<Exception> logErrorProcessor) {
         this.logErrorProcessor = logErrorProcessor;
     }
 

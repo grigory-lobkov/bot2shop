@@ -32,7 +32,7 @@ public class MakeAction<KeyWordType> {
                 try {
                     result = doPhraseActionSAY(phrase, session);
                 } catch (Exception e) {
-                    logger.LogError(session.connId, session.sessionId, "MakeAction.doPhraseActionSAY " + e);
+                    logger.LogError(session.connId, session.sessionId, e);
                 }
                 break;
         }

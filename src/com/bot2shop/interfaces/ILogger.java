@@ -12,6 +12,6 @@ public interface ILogger {
     void LogOutcome(int connId, String sessId, String text);
 
     // logging error messages
-    void LogError(int connId, String sessId, String text);
+    void LogError(int connId, String sessId, Exception exception);
 
 }

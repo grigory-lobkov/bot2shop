@@ -13,7 +13,7 @@ public class Connections<KeyWordType> {
 
     // processor for logging
     private ILogger logger;
-    private IProcessor<String> logErrorProcessor;
+    private IProcessor<Exception> logErrorProcessor;
     public void setLogger(ILogger logger) {
         this.logger = logger;
         this.logErrorProcessor = logger::LogError;
@@ -39,13 +39,7 @@ public class Connections<KeyWordType> {
                     }
                 }
             } catch (Exception e) {
-                StringBuffer sb = new StringBuffer(500);
-                StackTraceElement[] st = e.getStackTrace();
-                sb.append(e.getClass().getName() + ": " + e.getMessage() + "\n");
-                for (int i = 0; i < st.length; i++) {
-                    sb.append("\t at " + st[i].toString() + "\n");
-                }
-                logger.LogError(connId, sessionId, "Connections.incomeTextProcessor " + sb.toString());
+                logger.LogError(connId, sessionId, e);
             }
         };
     }
