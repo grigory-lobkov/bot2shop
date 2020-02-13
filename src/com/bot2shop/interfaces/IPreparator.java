@@ -5,6 +5,7 @@ package com.bot2shop.interfaces;
  *   Implementations package: com.bot2shop.prepare
  */
 
+
 public interface IPreparator<KeyWordType> {
 
     // Preparing key words

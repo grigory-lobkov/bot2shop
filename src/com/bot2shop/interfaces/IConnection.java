@@ -1,9 +1,9 @@
 package com.bot2shop.interfaces;
 
 /*
-*   Interface for External Connections to bot services
-*   Implementations package: com.bot2shop.ext
-*/
+ *   Interface for External Connections to bot services
+ *   Implementations package: com.bot2shop.ext
+ */
 
 
 public interface IConnection {

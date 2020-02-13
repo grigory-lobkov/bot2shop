@@ -1,11 +1,13 @@
 package com.bot2shop.model;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 /*
-     Phrases, we send to user
-*/
+ *  Phrases, we able to recognize
+ */
+
 
 public class Phrase<KeyWordType> {
 
@@ -50,14 +52,14 @@ public class Phrase<KeyWordType> {
     public int showChance = 100; // show this phrase in certain probability (1-100)
 
 
-    @Override
-    public boolean equals(Object o) { // for Hashtable
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         return id == ((Phrase) o).id;
-    }
-    @Override
+    } // for Hashtable
+
     public int hashCode() { // for Hashtable
         return id;
-    }
+    } // for Hashtable
+
 }

@@ -7,22 +7,35 @@ import com.bot2shop.model.Session;
 
 import java.util.SplittableRandom;
 
+/*
+ *   Bot knowledge base, search implementation
+ */
+
 
 public class MakeAction<KeyWordType> {
 
-    private SplittableRandom random = new SplittableRandom();
+    private SplittableRandom random = new SplittableRandom(); // random generator
 
     // each word of user preparator
     private IPreparator<KeyWordType> preparator;
-    public void setPreparator(IPreparator<KeyWordType> preparator) { this.preparator = preparator; }
+
+    public void setPreparator(IPreparator<KeyWordType> preparator) {
+        this.preparator = preparator;
+    }
 
     // logger
     private ILogger logger;
-    public void setLogger(ILogger logger) { this.logger = logger; }
+
+    public void setLogger(ILogger logger) {
+        this.logger = logger;
+    }
 
     // phrases
     private Phrases phrases;
-    public void setPhrases(Phrases phrases) { this.phrases = phrases; }
+
+    public void setPhrases(Phrases phrases) {
+        this.phrases = phrases;
+    }
 
     // do Phrase Action
     private Phrase.Action doPhraseAction(Phrase phrase, Session session) {
@@ -58,15 +71,15 @@ public class MakeAction<KeyWordType> {
         KeyWordType[] userWords = preparator.prepareInput(inText);
         Phrase<KeyWordType>[] foundPhrases = phrases.findPhraseByKeywords(userWords, session.lastRoom, session.lastPhrase);
         if (foundPhrases != null && foundPhrases.length > 0) {
-            for (Phrase p: foundPhrases) {
-                if(p.showOnlyOnce) {
-                    if(!session.getShown(p)) continue;
+            for (Phrase p : foundPhrases) {
+                if (p.showOnlyOnce) {
+                    if (!session.getShown(p)) continue;
                 }
-                if(p.showChance < 100) {
+                if (p.showChance < 100) {
                     int rnd = random.nextInt(100);
-                    if(rnd>=p.showChance) continue;
+                    if (rnd >= p.showChance) continue;
                 }
-                if(p.showOnlyOnce) {
+                if (p.showOnlyOnce) {
                     session.setShown(p);
                 }
                 return doPhraseAction(p, session);
@@ -76,15 +89,15 @@ public class MakeAction<KeyWordType> {
         // search by last state
         foundPhrases = phrases.findPhraseByLast(session.lastRoom, session.lastPhrase);
         if (foundPhrases.length > 0) {
-            for (Phrase p: foundPhrases) {
-                if(p.showOnlyOnce) {
-                    if(!session.getShown(p)) continue;
+            for (Phrase p : foundPhrases) {
+                if (p.showOnlyOnce) {
+                    if (!session.getShown(p)) continue;
                 }
-                if(p.showChance < 100) {
+                if (p.showChance < 100) {
                     int rnd = random.nextInt(100);
-                    if(rnd>=p.showChance) continue;
+                    if (rnd >= p.showChance) continue;
                 }
-                if(p.showOnlyOnce) {
+                if (p.showOnlyOnce) {
                     session.setShown(p);
                 }
                 return doPhraseAction(p, session);

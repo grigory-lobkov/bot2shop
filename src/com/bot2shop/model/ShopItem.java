@@ -2,6 +2,11 @@ package com.bot2shop.model;
 
 import java.util.ArrayList;
 
+/*
+ *   Item, available for cart addition
+ */
+
+
 public class ShopItem {
 
     public String name; // Name of product

@@ -6,6 +6,11 @@ import com.bot2shop.prepare.*;
 import com.bot2shop.processor.*;
 import com.bot2shop.storage.*;
 
+/*
+ *   Link dependencies, start program
+ */
+
+
 class ApplicationStart<KeyWordType> {
 
     private ILogger logger = new ConsoleLogger(); // log anything
@@ -35,7 +40,7 @@ class ApplicationStart<KeyWordType> {
 //        System.getProperties().put("socksProxyPort", "9150");
 //        org.telegram.telegrambots.ApiContextInitializer.init(); // telegram specific
 //        connections.add(new Telegram(), "Pizza24testingbot", "1011637303:AAE7o8myLHhW96fgAlnHI3EQeAwEbs12_fE");
-        connections.add(new ConsoleChat());
+        connections.add(new ConsoleChat()); // for debug
         connections.startAll();
     }
 

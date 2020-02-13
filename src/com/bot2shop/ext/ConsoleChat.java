@@ -1,5 +1,14 @@
 package com.bot2shop.ext;
 
+/*
+ *
+ *   Test purpose console bot,
+ *   using standard System.in
+ *
+ *
+ */
+
+
 import com.bot2shop.interfaces.IConnection;
 import com.bot2shop.interfaces.IProcessor;
 
@@ -7,7 +16,8 @@ import java.util.Scanner;
 
 public class ConsoleChat implements IConnection {
 
-    public void setup(String... params) { } // no need to set up
+    public void setup(String... params) {
+    } // no need to set up
 
     // Send text message to session
     public boolean sendText(String sessionId, String textMessage) {
@@ -21,19 +31,21 @@ public class ConsoleChat implements IConnection {
         Scanner in = new Scanner(System.in);
         do {
             input = in.nextLine();
-            incomeTextProcessor.process(id,"Console", input);
+            incomeTextProcessor.process(id, "Console", input);
         } while (input.compareTo("/exit") != 0);
         in.close();
     }
 
     // Integer identifier of connection
     private int id;
-    public void setConnId(int id) { this.id = id; }
+
+    public void setConnId(int id) {
+        this.id = id;
+    }
     //public int getConnId() { return id; }
 
     // Set processor to log errors
     private IProcessor<Exception> logErrorProcessor;
-
     public void setErrorProcessor(IProcessor<Exception> logErrorProcessor) {
         this.logErrorProcessor = logErrorProcessor;
     }

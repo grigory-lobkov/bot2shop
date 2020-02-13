@@ -7,10 +7,15 @@ import com.bot2shop.model.Phrase.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ *   Phrases base, stored in program code
+ */
+
+
 public class InlineDictionary<KeyWordType> implements IDictionary {
 
-    private List<Phrase<KeyWordType>> rawPhraseList;
-    private Room roomNow;
+    private List<Phrase<KeyWordType>> rawPhraseList; // temporary list for result
+    private Room roomNow; // default room for currently adding words
 
     // one line generation helper
     public Phrase<KeyWordType> newP(String sayText, String[] keyWords) {
@@ -22,6 +27,7 @@ public class InlineDictionary<KeyWordType> implements IDictionary {
         rawPhraseList.add(p);
         return p;
     }
+
     public Phrase<KeyWordType> newP(String sayText) {
         return newP(sayText, new String[]{});
     }

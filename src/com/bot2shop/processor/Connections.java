@@ -9,6 +9,13 @@ import com.bot2shop.model.Session;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ *   Connections to messengers
+ *
+ *   TODO: Start multiple bots simultaneously, restart in configured timeout, if failed
+ */
+
+
 public class Connections<KeyWordType> {
 
     // processor for logging
@@ -21,10 +28,14 @@ public class Connections<KeyWordType> {
 
     // session list class
     private Sessions<KeyWordType> sessions;
-    public void setSessions(Sessions<KeyWordType> sessions) { this.sessions = sessions; }
+
+    public void setSessions(Sessions<KeyWordType> sessions) {
+        this.sessions = sessions;
+    }
 
     // processor for incoming messages
     private IProcessor<String> incomeTextProcessor;
+
     public void setIncomeTextProcessor(MakeAction<KeyWordType> makeAction) {
         this.incomeTextProcessor = (connId, sessionId, parameter) -> {
             logger.LogIncome(connId, sessionId, parameter);
@@ -59,8 +70,8 @@ public class Connections<KeyWordType> {
 
     // start all connections
     public void startAll() {
-        for (IConnection conn: connections){
-            conn.start(); // TODO: Start multiple bots simultaneously, restart if failed
+        for (IConnection conn : connections) {
+            conn.start();
         }
     }
 

@@ -2,6 +2,12 @@ package com.bot2shop.storage;
 
 import com.bot2shop.interfaces.ILogger;
 
+/*
+ *   Put everything to console,
+ *   using System.out
+ */
+
+
 public class ConsoleLogger implements ILogger {
 
     // logging
@@ -15,7 +21,7 @@ public class ConsoleLogger implements ILogger {
     }
 
     // logging outcome messages
-    public void LogOutcome(int connId, String sessId, String text){
+    public void LogOutcome(int connId, String sessId, String text) {
         Log(connId, sessId, "OUT: " + text);
     }
 

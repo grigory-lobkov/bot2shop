@@ -10,15 +10,17 @@ import java.util.*;
 import static com.bot2shop.model.Config.*;
 
 /*
-* Bot knowledge base
-* */
+ *   Bot knowledge base, search implementation
+ */
+
 
 public class Phrases<KeyWordType> {
 
     class KeyWordLink {
         Phrase<KeyWordType> phrase;
         float weight;
-        public KeyWordLink(Phrase<KeyWordType> phrase,float weight) {
+
+        public KeyWordLink(Phrase<KeyWordType> phrase, float weight) {
             this.phrase = phrase;
             this.weight = weight;
         }
@@ -31,15 +33,24 @@ public class Phrases<KeyWordType> {
 
     // logger
     private ILogger logger;
-    public void setLogger(ILogger logger) { this.logger = logger; }
+
+    public void setLogger(ILogger logger) {
+        this.logger = logger;
+    }
 
     // each phrase keyword preparator
     private IPreparator<KeyWordType> preparator;
-    public void setPreparator(IPreparator<KeyWordType> preparator) { this.preparator = preparator; }
+
+    public void setPreparator(IPreparator<KeyWordType> preparator) {
+        this.preparator = preparator;
+    }
 
     // access to data
     private IDictionary<KeyWordType> dictionary;
-    public void setDictionary(IDictionary<KeyWordType> dictionary) { this.dictionary = dictionary; }
+
+    public void setDictionary(IDictionary<KeyWordType> dictionary) {
+        this.dictionary = dictionary;
+    }
 
     // load and process phrases
     public void processDictionary() {
@@ -139,9 +150,9 @@ public class Phrases<KeyWordType> {
     Phrase<KeyWordType> findPhraseHashMaxWeight(Map<Phrase<KeyWordType>, Float> phrasesMap) {
         Float maxWeight = 0f;
         Phrase<KeyWordType> maxWPhrase = null;
-        for(Map.Entry<Phrase<KeyWordType>, Float> entry : phrasesMap.entrySet()) {
+        for (Map.Entry<Phrase<KeyWordType>, Float> entry : phrasesMap.entrySet()) {
             Float weight = entry.getValue();
-            if(weight > maxWeight) {
+            if (weight > maxWeight) {
                 maxWeight = weight;
                 maxWPhrase = entry.getKey();
             }
@@ -178,7 +189,7 @@ public class Phrases<KeyWordType> {
         Map<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
 
         // calculate weights
-        for (KeyWordType srchWord: srchWords) {
+        for (KeyWordType srchWord : srchWords) {
             List<KeyWordLink> kwlList = keyWordsTbl.get(srchWord);
             if (kwlList != null) {
                 for (KeyWordLink kwl : kwlList) {

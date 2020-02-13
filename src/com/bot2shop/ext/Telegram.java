@@ -1,15 +1,17 @@
-/*
-*   Telegram External Connection, v 4.6
-*
-* Dependencies: telegrambots-4.6-jar-with-dependencies.jar
-* Url: https://github.com/rubenlagus/TelegramBots
-* Ftp: https://repo1.maven.org/maven2/org/telegram/telegrambots/
-*
-* HowTo: Download Source code from URL, compile it into .jar with dependencies,
-*        File -> Project Structure  -> Add "Dependencies" (+) -> Select your .jar file
-*
-* */
 package com.bot2shop.ext;
+
+/*
+ *   Telegram External Connection, v 4.6
+ *
+ * Dependencies: telegrambots-4.6-jar-with-dependencies.jar
+ * Url: https://github.com/rubenlagus/TelegramBots
+ * Ftp: https://repo1.maven.org/maven2/org/telegram/telegrambots/
+ *
+ * HowTo: Download Source code from URL, compile it into .jar with dependencies,
+ *        File -> Project Structure  -> Add "Dependencies" (+) -> Select your .jar file
+ *
+ */
+
 
 import com.bot2shop.interfaces.IConnection;
 import com.bot2shop.interfaces.IProcessor;
@@ -45,6 +47,7 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
 
     // for TelegramLongPollingBot
     public String getBotToken() { return this.token; }
+
     public String getBotUsername() { return this.username; }
 
     // when something happens, from TelegramLongPollingBot
@@ -107,6 +110,7 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
 
     // Integer identifier of connection
     private int id = -1;
+
     public void setConnId(int id) { this.id = id; }
     //public int getConnId() { return id; }
 
@@ -119,6 +123,7 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
 
     // Set processor to process income user messages
     private IProcessor<String> incomeTextProcessor;
+
     public void setIncomeTextProcessor(IProcessor<String> incomeTextProcessor) {
         this.incomeTextProcessor = incomeTextProcessor;
     }

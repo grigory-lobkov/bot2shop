@@ -7,8 +7,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /*
-*  Stores user sessions and it's parameters
-*  */
+ *  Stores user sessions and it's parameters
+ */
+
 
 public class Session<KeyWordType> {
 
@@ -34,7 +35,13 @@ public class Session<KeyWordType> {
     }
 
     static private Set<Phrase> shownPhrases = new HashSet<>(); // how many times Phrase shown
-    public boolean getShown(Phrase phrase) { return shownPhrases.contains(phrase); }
-    public void setShown(Phrase phrase) { shownPhrases.add(phrase); }
+
+    public boolean getShown(Phrase phrase) {
+        return shownPhrases.contains(phrase);
+    }
+
+    public void setShown(Phrase phrase) {
+        shownPhrases.add(phrase);
+    }
 
 }

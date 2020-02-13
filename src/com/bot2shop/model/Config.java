@@ -1,5 +1,10 @@
 package com.bot2shop.model;
 
+/*
+ *  Configurable parameters, constants
+ */
+
+
 public class Config {
 
     public final static int DECIMALS_IN_COST = 2; // Quantity of decimals after the point (all costs is integers)

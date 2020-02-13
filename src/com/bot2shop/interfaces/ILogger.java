@@ -1,5 +1,10 @@
 package com.bot2shop.interfaces;
 
+/*
+ *   Logging of different actions
+ */
+
+
 public interface ILogger {
 
     // logging

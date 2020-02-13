@@ -2,15 +2,25 @@ package com.bot2shop.processor;
 
 import com.bot2shop.interfaces.IConnection;
 import com.bot2shop.interfaces.ILogger;
-import com.bot2shop.model.Phrase;
 import com.bot2shop.model.Session;
 
 import java.util.*;
 
+/*
+ *   User sessions
+ *
+ *   TODO: periodical idle session search and safe kill
+ */
+
+
 public class Sessions<KeyWordType> {
 
+    // processor for logging
     private ILogger logger;
-    public void setLogger(ILogger logger) { this.logger = logger; }
+
+    public void setLogger(ILogger logger) {
+        this.logger = logger;
+    }
 
     static private Map<String, Session> sessions = new Hashtable<>(); // users sessions identifiers hashtable
 
