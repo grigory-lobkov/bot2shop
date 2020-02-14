@@ -1,13 +1,16 @@
-# Bot for Sales
+# Bot for Sales, FAQ, Support, HR
+Program is written on JAVA and must be configured before run. You can improve algorithms and help others: push your aspirations.
+
+## Bot for Sales
 Will talk with customers and accepting their orders
 
-# Bot for FAQ
+## Bot for FAQ
 Add you common questions to help your clients
 
-# Bot for Support
+## Bot for Support
 Add you support-team talk tree to help users, solving their problems
 
-# Bot for HR
+## Bot for HR
 - Vacancies list
 - Accepting vacation request, approve it
 - News, events subscription and messaging
@@ -15,8 +18,11 @@ Add you support-team talk tree to help users, solving their problems
 - Tests, trainings
 - Negotiation reservation
 
-# Supported messengers
+## Bot for something
+Anything, what personal do, machine can do, just give the algorithm
+
+## Supported messengers
 - Telegram
 
-# Help
+## Help
 If you want for business relationship, write me by email grigorymail.at.mail.in.ru or call +7922122DATA
