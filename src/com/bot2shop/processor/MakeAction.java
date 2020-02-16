@@ -8,7 +8,7 @@ import com.bot2shop.model.Session;
 import java.util.SplittableRandom;
 
 /*
- *   Bot knowledge base, search implementation
+ *   Actions, after target phrases found
  */
 
 
@@ -48,6 +48,7 @@ public class MakeAction<KeyWordType> {
                     logger.LogError(session.connId, session.sessionId, e);
                 }
                 break;
+            default:
         }
         if (phrase.canBeLast) {
             session.lastPhrase = phrase;

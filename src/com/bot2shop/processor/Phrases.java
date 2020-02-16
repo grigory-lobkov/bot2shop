@@ -33,21 +33,18 @@ public class Phrases<KeyWordType> {
 
     // logger
     private ILogger logger;
-
     public void setLogger(ILogger logger) {
         this.logger = logger;
     }
 
     // each phrase keyword preparator
     private IPreparator<KeyWordType> preparator;
-
     public void setPreparator(IPreparator<KeyWordType> preparator) {
         this.preparator = preparator;
     }
 
     // access to data
     private IDictionary<KeyWordType> dictionary;
-
     public void setDictionary(IDictionary<KeyWordType> dictionary) {
         this.dictionary = dictionary;
     }
@@ -222,7 +219,7 @@ public class Phrases<KeyWordType> {
         if (lastPhrase != null && lastPhrase.nextPhrasesIfUnknown != null) {
             for (Phrase phrase : lastPhrase.nextPhrasesIfUnknown) {
                 Float weight = foundPhrases.get(phrase);
-                weight = weight != null ? FOLLOW_EXCLUSIVE_PHRASE_COST : weight * FOLLOW_EXCLUSIVE_PHRASE_COST;
+                weight = weight == null ? FOLLOW_EXCLUSIVE_PHRASE_COST : weight * FOLLOW_EXCLUSIVE_PHRASE_COST;
                 foundPhrases.put(phrase, weight);
             }
         }
@@ -233,7 +230,7 @@ public class Phrases<KeyWordType> {
             if (phrases != null) {
                 for (Phrase phrase : phrases) {
                     Float weight = foundPhrases.get(phrase);
-                    weight = weight != null ? FOLLOW_EXCLUSIVE_ROOM_COST : weight * FOLLOW_EXCLUSIVE_ROOM_COST;
+                    weight = weight == null ? FOLLOW_EXCLUSIVE_ROOM_COST : weight * FOLLOW_EXCLUSIVE_ROOM_COST;
                     foundPhrases.put(phrase, weight);
                 }
             }

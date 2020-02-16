@@ -20,7 +20,7 @@ public class Phrase<KeyWordType> {
     private static int nextId = 0; // autoincrement next identifier of Phrase for Hashtable
     public Integer id = nextId++; // autoincrement identifier of Phrase for Hashtable
 
-    public String[] keyWords; // key words, lead to Action
+    public String[] keyWords = {}; // key words, lead to Action
     public Map<KeyWordType, Float> keyWordsTbl; // key words with weight as value, lead to Action
     public Integer[] nextPhrasesId = {}; // Phrase's expected after this Phrase
     public Phrase<KeyWordType>[] nextPhrases; // Phrase's expected after this Phrase
@@ -29,7 +29,7 @@ public class Phrase<KeyWordType> {
 
     public GoesAfter goesAfter = GoesAfter.AFTERALL; // after what we are expecting this Phrase
 
-    public Action action = null; // this word means this Action
+    public Action action = Action.SAY; // this word means this Action
     public String sayText = null; // Action=SAY, what to say
     public ShopItem addtocartItem = null; // Action=ADDTOCART, item to add
     public String saveinfoType = null; // Action=SAVEINFO, what we are saving

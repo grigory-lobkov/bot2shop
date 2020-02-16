@@ -14,4 +14,7 @@ public interface IDictionary<KeyWordType> {
     // returns list of phrases from storage
     List<Phrase<KeyWordType>> getRawPhraseList();
 
+    // logger
+    void setLogger(ILogger logger);
+
 }

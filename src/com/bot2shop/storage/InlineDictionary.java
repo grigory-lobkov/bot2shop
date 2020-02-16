@@ -1,6 +1,7 @@
 package com.bot2shop.storage;
 
 import com.bot2shop.interfaces.IDictionary;
+import com.bot2shop.interfaces.ILogger;
 import com.bot2shop.model.Phrase;
 import com.bot2shop.model.Phrase.*;
 
@@ -16,6 +17,12 @@ public class InlineDictionary<KeyWordType> implements IDictionary {
 
     private List<Phrase<KeyWordType>> rawPhraseList; // temporary list for result
     private Room roomNow; // default room for currently adding words
+
+    // logger
+    private ILogger logger;
+    public void setLogger(ILogger logger) {
+        this.logger = logger;
+    }
 
     // one line generation helper
     public Phrase<KeyWordType> newP(String sayText, String[] keyWords) {

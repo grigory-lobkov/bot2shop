@@ -1,8 +1,7 @@
 <phrases>
     <HELLO>
-        <phrase isRoomStart="true">
-            <sayText>Приветствую!\nЗдесь вы можете задать вопросы про нашу школу и курсы.\nЕсли я не смогу помочь вам,
-                напишите:\n/help Здесь текст вашего вопроса одним предложением
+        <phrase isRoomStart="true" action="SAY">
+            <sayText>Приветствую!\nЗдесь вы можете задать вопросы про нашу школу и курсы.\nЕсли я не смогу помочь вам, напишите:\n/help Здесь текст вашего вопроса одним предложением
             </sayText>
             <keyWords>/start</keyWords>
         </phrase>
@@ -71,11 +70,11 @@
             </sayText>
         </phrase>
     </ORDER>
-    <OTHER>
+    <NONE>
         <phrase unknownForRooms="HELLO, ORDER">
             <sayText>К сожалению, я не знаю ответа на этот вопрос, я могу подсказать про возраст, бесплатный
                 мастер-класс, где проходят занятия, что иметь с собой, о группе.
             </sayText>
         </phrase>
-    </OTHER>
+    </NONE>
 </phrases>
