@@ -73,16 +73,12 @@ public class MakeAction<KeyWordType> {
         Phrase<KeyWordType>[] foundPhrases = phrases.findPhraseByKeywords(userWords, session.lastTopic, session.lastPhrase);
         if (foundPhrases != null && foundPhrases.length > 0) {
             for (Phrase p : foundPhrases) {
-                if (p.showOnlyOnce) {
-                    if (!session.getShown(p)) continue;
-                }
+                if (p.showOnlyOnce) if (!session.getShown(p)) continue;
                 if (p.showChance < 100) {
                     int rnd = random.nextInt(100);
                     if (rnd >= p.showChance) continue;
                 }
-                if (p.showOnlyOnce) {
-                    session.setShown(p);
-                }
+                if (p.showOnlyOnce) session.setShown(p);
                 return doPhraseAction(p, session);
             }
         }
@@ -91,17 +87,24 @@ public class MakeAction<KeyWordType> {
         foundPhrases = phrases.findPhraseByLast(session.lastTopic, session.lastPhrase);
         if (foundPhrases.length > 0) {
             for (Phrase p : foundPhrases) {
-                if (p.showOnlyOnce) {
-                    if (!session.getShown(p)) continue;
-                }
+                if (p.showOnlyOnce) if (!session.getShown(p)) continue;
                 if (p.showChance < 100) {
                     int rnd = random.nextInt(100);
                     if (rnd >= p.showChance) continue;
                 }
-                if (p.showOnlyOnce) {
-                    session.setShown(p);
-                }
+                if (p.showOnlyOnce) session.setShown(p);
                 return doPhraseAction(p, session);
+            }
+        }
+
+        // search for default /start phrase
+        if(session.lastTopic == null && session.lastPhrase == null) {
+            KeyWordType[] startUserWords = preparator.prepareInput("/start");
+            foundPhrases = phrases.findPhraseByKeywords(startUserWords, null, null);
+            if (foundPhrases != null && foundPhrases.length > 0) {
+                for (Phrase p : foundPhrases) {
+                    return doPhraseAction(p, session);
+                }
             }
         }
         return null;

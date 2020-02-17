@@ -54,7 +54,6 @@ public class Phrases<KeyWordType> {
 
     // topics
     private Topics topics;
-
     public void setTopics(Topics topics) {
         this.topics = topics;
     }

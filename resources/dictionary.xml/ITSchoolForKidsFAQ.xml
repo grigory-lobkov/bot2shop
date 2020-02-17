@@ -1,6 +1,6 @@
 <phrases>
     <topic shortName="HELLO">
-        <phrase isRoomStart="true" action="SAY">
+        <phrase action="SAY">
             <sayText>Приветствую!\nЗдесь вы можете задать вопросы про нашу школу и курсы.\nЕсли я не смогу помочь вам, напишите:\n/help Здесь текст вашего вопроса одним предложением
             </sayText>
             <keyWords>/start</keyWords>
@@ -9,10 +9,13 @@
             <sayText>Пожалуйста, спрашивайте! Я постараюсь Вам помочь!</sayText>
             <keyWords>Привет, Здравствуй, Здравствуйте, Здорово, Хай, Hi, Hello</keyWords>
         </phrase>
-        <phrase unknownForTopic="true">
+        <phrase isTopicUnknown="true">
             <sayText>К сожалению, я не знаю ответа на этот вопрос, я могу подсказать про возраст, бесплатный
                 мастер-класс, где проходят занятия, что иметь с собой, о группе.
             </sayText>
+        </phrase>
+        <phrase action="OBSERVETOPICS">
+            <sayText>Не могу разобраться, на какой вопрос вы хотите получить ответ. Пожалуйста, выберете один из вариантов.</sayText>
         </phrase>
     </topic>
     <topic name="С какого возраста мой ребенок может заниматься у вас?">

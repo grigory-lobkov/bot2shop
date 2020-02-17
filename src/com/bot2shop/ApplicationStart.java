@@ -24,8 +24,8 @@ class ApplicationStart<KeyWordType> {
 
     // Start of the BOT
     public void start() {
-        dictionary.process();
         dictionary.setLogger(logger);
+        dictionary.process();
         topics.setDictionary(dictionary);
         phrases.setLogger(logger);
         phrases.setTopics(topics);

@@ -19,12 +19,22 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
 
     // logger
     private ILogger logger;
-
     public void setLogger(ILogger logger) {
         this.logger = logger;
     }
+    private void logError(Exception e) {
+        logger.LogError(-1, null, e);
+    }
+    private void logError(String text) {
+        logError(new RuntimeException(text));
+    }
+    private void logError(Exception e, String text) {
+        Exception re = new RuntimeException(text + ": " + e.getMessage());
+        re.setStackTrace(e.getStackTrace());
+        logError(re);
+    }
 
-    @Override
+    // do actions, prepare connection/data
     public void process() {
         rawTopicList = new ArrayList<Topic>();
         rawPhraseList = new ArrayList<Phrase<KeyWordType>>();
@@ -42,20 +52,6 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
         } catch (Exception e) {
             logError(e);
         }
-    }
-
-    private void logError(Exception e) {
-        logger.LogError(-1, null, e);
-    }
-
-    private void logError(String text) {
-        logError(new RuntimeException(text));
-    }
-
-    private void logError(Exception e, String text) {
-        Exception re = new RuntimeException(text + ": " + e.getMessage());
-        re.setStackTrace(e.getStackTrace());
-        logError(re);
     }
 
     // returns list of phrases from storage
@@ -78,45 +74,68 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
                 continue;
             }
 
-            NodeList roomList = node.getChildNodes();
-            processRoom(roomList);
+            NodeList topicList = node.getChildNodes();
+            processTopic(topicList);
         }
     }
 
-    private void processRoom(NodeList roomList) {
-        Topic room;
-        for (int i = 0; i < roomList.getLength(); i++) {
-            Node node = roomList.item(i);
+    private void processTopic(NodeList topicList) {
+        for (int i = 0; i < topicList.getLength(); i++) {
+            Node node = topicList.item(i);
             if (node.getNodeType() != Node.ELEMENT_NODE) continue;
             String name = node.getNodeName();
-            if (name.compareTo("NONE") == 0) {
-                room = null;
-            } else {
-                room = Topic.valueOf(name);
-                if (room == null) {
-                    logError("XmlParseDictionary. Room \"" + name + "\" not found in Phrase.Room enum.");
-                    continue;
-                }
+            if (name.compareTo("topic") != 0) {
+                logError("XmlParseDictionary. Element inside phrases must be \"topic\", not \"" + name + "\".");
+                continue;
             }
 
+            Topic t = new Topic();
+            rawTopicList.add(t);
+            if (node.hasAttributes()) {
+                NamedNodeMap nodeMap = node.getAttributes();
+                processTopicAtributes(t, nodeMap);
+            }
             NodeList phraseList = node.getChildNodes();
-            processPhrase(room, phraseList);
+            processPhrase(t, phraseList);
         }
     }
 
-    private void processPhrase(Topic room, NodeList phraseList) {
+    private void processTopicAtributes(Topic t, NamedNodeMap nodeMap) {
+        for (int k = 0; k < nodeMap.getLength(); k++) {
+            Node node = nodeMap.item(k);
+            String name = node.getNodeName();
+            String value = node.getNodeValue();
+            try {
+                switch (name) {
+                    case "name":
+                        t.name = value;
+                        break;
+                    case "shortName":
+                        t.shortName = value;
+                        break;
+                    default:
+                        logError("XmlParseDictionary. Topic attribute \"" + name + "\"=\"" + value + "\" not implemented, yet.");
+                        continue;
+                }
+            } catch (Exception e) {
+                logError(e, "XmlParseDictionary. Topic attribute \"" + name + "\"=\"" + value + "\" cannot be parsed");
+            }
+        }
+    }
+
+    private void processPhrase(Topic topic, NodeList phraseList) {
         for (int i = 0; i < phraseList.getLength(); i++) {
             Node node = phraseList.item(i);
             if (node.getNodeType() != Node.ELEMENT_NODE) continue;
             String name = node.getNodeName();
             if (name.compareTo("phrase") != 0) {
-                logError("XmlParseDictionary. Element inside ROOM must be \"phrase\", not \"" + name + "\".");
+                logError("XmlParseDictionary. Element inside topic must be \"phrase\", not \"" + name + "\".");
                 continue;
             }
 
             Phrase<KeyWordType> p = new Phrase<KeyWordType>();
             rawPhraseList.add(p);
-            p.topic = room;
+            p.topic = topic;
             if (node.hasAttributes()) {
                 NamedNodeMap nodeMap = node.getAttributes();
                 processPhraseAtributes(p, nodeMap);
@@ -138,6 +157,9 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
 //                    case "isTopicStart":
 //                        p.isTopicStart = Boolean.parseBoolean(value);
 //                        break;
+                    case "isTopicUnknown":
+                        p.isTopicUnknown = Boolean.parseBoolean(value);
+                        break;
                     case "timeoutSec":
                         p.timeoutSec = Integer.parseInt(value);
                         break;
@@ -146,11 +168,11 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
                         break;
 //                    case "unknownForTopics":
 //                        String[] vals = value.split("[, ?.@]+");
-//                        Topic[] rooms = new Topic[vals.length];
+//                        Topic[] topics = new Topic[vals.length];
 //                        for (int i = vals.length - 1; i >= 0; i--) {
-//                            rooms[i] = Topic.valueOf(vals[i]);
+//                            topics[i] = Topic.valueOf(vals[i]);
 //                        }
-//                        p.unknownForRooms = rooms;
+//                        p.unknownForTopics = topics;
 //                        break;
                     case "action":
                         p.action = Phrase.Action.valueOf(value);
