@@ -19,14 +19,14 @@ public class Session<KeyWordType> {
     private ZonedDateTime createDate; // when session created
     private ZonedDateTime lastAccess; // last session access
     public Phrase<KeyWordType> lastPhrase;
-    public Phrase.Room lastRoom;
+    public Topic lastTopic;
 
     public Session(int connId, String sessionId, IConnection conn) {
         this.connId = connId;
         this.sessionId = sessionId;
         this.conn = conn;
         this.createDate = ZonedDateTime.now();
-        this.lastRoom = Phrase.Room.HELLO;
+        this.lastTopic = null;
     }
 
     public Session refresh() {

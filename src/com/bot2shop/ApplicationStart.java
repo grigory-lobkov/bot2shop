@@ -18,16 +18,19 @@ class ApplicationStart<KeyWordType> {
     private Sessions<KeyWordType> sessions = new Sessions<KeyWordType>(); // Session list
     private Connections<KeyWordType> connections = new Connections<KeyWordType>(); // Connection list
     private IDictionary<KeyWordType> dictionary = new XmlParseDictionary<KeyWordType>(); // Connection to dictionary
-    private Phrases<KeyWordType> phrases = new Phrases<KeyWordType>(); // Bot knowledge base, <KeyWordType>
-    private IPreparator<KeyWordType> preparator = new LowCasePreparator(); // User words and phrases keyword preparator, <KeyWordType>
+    private Topics<KeyWordType> topics = new Topics<KeyWordType>(); // Bot knowledge base, topics
+    private Phrases<KeyWordType> phrases = new Phrases<KeyWordType>(); // Bot knowledge base, phrases
+    private IPreparator<KeyWordType> preparator = new LowCasePreparator(); // User words and phrases keyword preparator
 
     // Start of the BOT
     public void start() {
+        dictionary.process();
         dictionary.setLogger(logger);
+        topics.setDictionary(dictionary);
         phrases.setLogger(logger);
+        phrases.setTopics(topics);
         phrases.setPreparator(preparator);
         phrases.setDictionary(dictionary);
-        phrases.processDictionary();
         makeActionProcessor.setLogger(logger);
         makeActionProcessor.setPhrases(phrases);
         makeActionProcessor.setPreparator(preparator);

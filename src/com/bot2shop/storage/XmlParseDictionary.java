@@ -3,6 +3,7 @@ package com.bot2shop.storage;
 import com.bot2shop.interfaces.IDictionary;
 import com.bot2shop.interfaces.ILogger;
 import com.bot2shop.model.Phrase;
+import com.bot2shop.model.Topic;
 import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -14,6 +15,7 @@ import java.util.List;
 public class XmlParseDictionary<KeyWordType> implements IDictionary {
 
     List<Phrase<KeyWordType>> rawPhraseList; // temporary list for result
+    private List<Topic> rawTopicList; // list of topics
 
     // logger
     private ILogger logger;
@@ -22,14 +24,10 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
         this.logger = logger;
     }
 
-    private void logError(Exception e) {
-        logger.LogError(-1, null, e);
-    }
-
-    // returns list of phrases from storage
-    public List<Phrase<KeyWordType>> getRawPhraseList() {
+    @Override
+    public void process() {
+        rawTopicList = new ArrayList<Topic>();
         rawPhraseList = new ArrayList<Phrase<KeyWordType>>();
-        Phrase.Room room;
 
         try {
             File fXmlFile = new File("resources/dictionary.xml/ITSchoolForKidsFAQ.xml");
@@ -44,8 +42,30 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
         } catch (Exception e) {
             logError(e);
         }
+    }
 
+    private void logError(Exception e) {
+        logger.LogError(-1, null, e);
+    }
+
+    private void logError(String text) {
+        logError(new RuntimeException(text));
+    }
+
+    private void logError(Exception e, String text) {
+        Exception re = new RuntimeException(text + ": " + e.getMessage());
+        re.setStackTrace(e.getStackTrace());
+        logError(re);
+    }
+
+    // returns list of phrases from storage
+    public List<Phrase<KeyWordType>> getPhraseList() {
         return rawPhraseList;
+    }
+
+    // returns list of topics from storage
+    public List<Topic> getTopicList() {
+        return rawTopicList;
     }
 
     private void processPhrases(NodeList list) {
@@ -54,7 +74,7 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
             if (node.getNodeType() != Node.ELEMENT_NODE) continue;
             String name = node.getNodeName();
             if (name.compareTo("phrases") != 0) {
-                logError(new RuntimeException("XmlParseDictionary. Root element must be \"phrases\", not \"" + name + "\"."));
+                logError("XmlParseDictionary. Root element must be \"phrases\", not \"" + name + "\".");
                 continue;
             }
 
@@ -64,7 +84,7 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
     }
 
     private void processRoom(NodeList roomList) {
-        Phrase.Room room;
+        Topic room;
         for (int i = 0; i < roomList.getLength(); i++) {
             Node node = roomList.item(i);
             if (node.getNodeType() != Node.ELEMENT_NODE) continue;
@@ -72,9 +92,9 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
             if (name.compareTo("NONE") == 0) {
                 room = null;
             } else {
-                room = Phrase.Room.valueOf(name);
+                room = Topic.valueOf(name);
                 if (room == null) {
-                    logError(new RuntimeException("XmlParseDictionary. Room \"" + name + "\" not found in Phrase.Room enum."));
+                    logError("XmlParseDictionary. Room \"" + name + "\" not found in Phrase.Room enum.");
                     continue;
                 }
             }
@@ -84,19 +104,19 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
         }
     }
 
-    private void processPhrase(Phrase.Room room, NodeList phraseList) {
+    private void processPhrase(Topic room, NodeList phraseList) {
         for (int i = 0; i < phraseList.getLength(); i++) {
             Node node = phraseList.item(i);
             if (node.getNodeType() != Node.ELEMENT_NODE) continue;
             String name = node.getNodeName();
             if (name.compareTo("phrase") != 0) {
-                logError(new RuntimeException("XmlParseDictionary. Element inside ROOM must be \"phrase\", not \"" + name + "\"."));
+                logError("XmlParseDictionary. Element inside ROOM must be \"phrase\", not \"" + name + "\".");
                 continue;
             }
 
             Phrase<KeyWordType> p = new Phrase<KeyWordType>();
             rawPhraseList.add(p);
-            p.room = room;
+            p.topic = room;
             if (node.hasAttributes()) {
                 NamedNodeMap nodeMap = node.getAttributes();
                 processPhraseAtributes(p, nodeMap);
@@ -115,34 +135,32 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
             String value = node.getNodeValue();
             try {
                 switch (name) {
-                    case "isRoomStart":
-                        p.isRoomStart = Boolean.parseBoolean(value);
-                        break;
+//                    case "isTopicStart":
+//                        p.isTopicStart = Boolean.parseBoolean(value);
+//                        break;
                     case "timeoutSec":
                         p.timeoutSec = Integer.parseInt(value);
                         break;
                     case "showChance":
                         p.showChance = Integer.parseInt(value);
                         break;
-                    case "unknownForRooms":
-                        String[] vals = value.split("[, ?.@]+");
-                        Phrase.Room[] rooms = new Phrase.Room[vals.length];
-                        for (int i = vals.length - 1; i >= 0; i--) {
-                            rooms[i] = Phrase.Room.valueOf(vals[i]);
-                        }
-                        p.unknownForRooms = rooms;
-                        break;
+//                    case "unknownForTopics":
+//                        String[] vals = value.split("[, ?.@]+");
+//                        Topic[] rooms = new Topic[vals.length];
+//                        for (int i = vals.length - 1; i >= 0; i--) {
+//                            rooms[i] = Topic.valueOf(vals[i]);
+//                        }
+//                        p.unknownForRooms = rooms;
+//                        break;
                     case "action":
                         p.action = Phrase.Action.valueOf(value);
                         break;
                     default:
-                        logError(new RuntimeException("XmlParseDictionary. Attribute \"" + name + "\"=\"" + value + "\" not implemented, yet."));
+                        logError("XmlParseDictionary. Attribute \"" + name + "\"=\"" + value + "\" not implemented, yet.");
                         continue;
                 }
             } catch (Exception e) {
-                Exception re = new RuntimeException("XmlParseDictionary. Attribute \"" + name + "\"=\"" + value + "\" cannot be parsed: " + e.getMessage());
-                re.setStackTrace(e.getStackTrace());
-                logError(re);
+                logError(e, "XmlParseDictionary. Attribute \"" + name + "\"=\"" + value + "\" cannot be parsed");
             }
         }
     }
@@ -163,13 +181,11 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
                         p.keyWords = vals;
                         break;
                     default:
-                        logError(new RuntimeException("XmlParseDictionary. Element \"" + name + "\"=\"" + value + "\" not implemented, yet."));
+                        logError("XmlParseDictionary. Element \"" + name + "\"=\"" + value + "\" not implemented, yet.");
                         continue;
                 }
             } catch (Exception e) {
-                Exception re = new RuntimeException("XmlParseDictionary. Element \"" + name + "\"=\"" + value + "\" cannot be parsed: " + e.getMessage());
-                re.setStackTrace(e.getStackTrace());
-                logError(re);
+                logError(e, "XmlParseDictionary. Element \"" + name + "\"=\"" + value + "\" cannot be parsed");
             }
         }
     }

@@ -4,6 +4,7 @@ import com.bot2shop.interfaces.IDictionary;
 import com.bot2shop.interfaces.ILogger;
 import com.bot2shop.interfaces.IPreparator;
 import com.bot2shop.model.Phrase;
+import com.bot2shop.model.Topic;
 
 import java.util.*;
 
@@ -28,7 +29,7 @@ public class Phrases<KeyWordType> {
 
     private Map<Integer, Phrase<KeyWordType>> phrases;
     private Map<KeyWordType, List<KeyWordLink>> keyWordsTbl;
-    private Map<Phrase.Room, List<Phrase<KeyWordType>>> roomStartPhrases;
+    private Map<Topic, List<Phrase<KeyWordType>>> topicStartPhrases;
     private Map<Phrase<KeyWordType>, List<Phrase<KeyWordType>>> lastPhrasePhrases;
 
     // logger
@@ -45,16 +46,25 @@ public class Phrases<KeyWordType> {
 
     // access to data
     private IDictionary<KeyWordType> dictionary;
+
     public void setDictionary(IDictionary<KeyWordType> dictionary) {
         this.dictionary = dictionary;
+        processDictionary();
+    }
+
+    // topics
+    private Topics topics;
+
+    public void setTopics(Topics topics) {
+        this.topics = topics;
     }
 
     // load and process phrases
     public void processDictionary() {
         phrases = new Hashtable<Integer, Phrase<KeyWordType>>();
         keyWordsTbl = new Hashtable<KeyWordType, List<KeyWordLink>>();
-        List<Phrase<KeyWordType>> phraseList = dictionary.getRawPhraseList();
-        roomStartPhrases = new Hashtable<Phrase.Room, List<Phrase<KeyWordType>>>();
+        List<Phrase<KeyWordType>> phraseList = dictionary.getPhraseList();
+        topicStartPhrases = new Hashtable<Topic, List<Phrase<KeyWordType>>>();
         lastPhrasePhrases = new Hashtable<Phrase<KeyWordType>, List<Phrase<KeyWordType>>>();
 
 
@@ -81,15 +91,15 @@ public class Phrases<KeyWordType> {
                 kwlList.add(kwl);
             }
 
-            // prepare roomStartPhrases hashtable
-            for (Phrase.Room room : phrase.unknownForRooms) {
-                List<Phrase<KeyWordType>> roomList = roomStartPhrases.get(room);
-                if (roomList == null) {
-                    roomList = new ArrayList<Phrase<KeyWordType>>();
-                    roomStartPhrases.put(room, roomList);
-                }
-                roomList.add(phrase);
-            }
+            // prepare topicStartPhrases hashtable
+//            for (Topic topic : phrase.unknownForTopics) {
+////                List<Phrase<KeyWordType>> topicList = topicStartPhrases.get(topic);
+////                if (topicList == null) {
+////                    topicList = new ArrayList<Phrase<KeyWordType>>();
+////                    topicStartPhrases.put(topic, topicList);
+////                }
+////                topicList.add(phrase);
+////            }
         }
 
         // iteration 2
@@ -127,7 +137,7 @@ public class Phrases<KeyWordType> {
     }
 
     // calculate basic weight of phrase
-    public float getPhraseBasicWeight(Phrase<KeyWordType> phrase, Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
+    public float getPhraseBasicWeight(Phrase<KeyWordType> phrase, Topic lastTopic, Phrase<KeyWordType> lastPhrase) {
         if (phrase.goesAfter == Phrase.GoesAfter.AFTERPREVIOUS) {
             return lastPhrase != null && phrase.afterPhrases.contains(lastPhrase) ? FOLLOW_EXCLUSIVE_PHRASE_COST : 0f;
         }
@@ -135,10 +145,10 @@ public class Phrases<KeyWordType> {
         if (lastPhrase != null) {
             if (phrase.afterPhrases.contains(lastPhrase)) weight *= FOLLOW_PHRASE_COST;
         }
-        if (phrase.goesAfter == Phrase.GoesAfter.AFTERROOM) {
-            return phrase.room == lastRoom ? weight * FOLLOW_EXCLUSIVE_ROOM_COST : 0;
+        if (phrase.goesAfter == Phrase.GoesAfter.AFTERTOPIC) {
+            return phrase.topic == lastTopic ? weight * FOLLOW_EXCLUSIVE_TOPIC_COST : 0;
         }
-        if (phrase.room == lastRoom) weight *= FOLLOW_ROOM_COST;
+        if (phrase.topic == lastTopic) weight *= FOLLOW_TOPIC_COST;
 
         return weight;
     }
@@ -182,7 +192,7 @@ public class Phrases<KeyWordType> {
     }
 
     // find out, which phrase is the most suitable, using keywords
-    public Phrase<KeyWordType>[] findPhraseByKeywords(KeyWordType[] srchWords, Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
+    public Phrase<KeyWordType>[] findPhraseByKeywords(KeyWordType[] srchWords, Topic lastTopic, Phrase<KeyWordType> lastPhrase) {
         Map<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
 
         // calculate weights
@@ -192,12 +202,12 @@ public class Phrases<KeyWordType> {
                 for (KeyWordLink kwl : kwlList) {
                     if (kwl.phrase.goesAfter == Phrase.GoesAfter.AFTERPREVIOUSSTRICT) {
                         if (!kwl.phrase.afterPhrases.contains(lastPhrase)) continue;
-                    } else if (kwl.phrase.goesAfter == Phrase.GoesAfter.AFTERROOMSTRICT) {
-                        if (kwl.phrase.room != lastRoom) continue;
+                    } else if (kwl.phrase.goesAfter == Phrase.GoesAfter.AFTERTOPICSTRICT) {
+                        if (kwl.phrase.topic != lastTopic) continue;
                     }
                     Float weight = foundPhrases.get(kwl.phrase);
                     if (weight == null) {
-                        weight = getPhraseBasicWeight(kwl.phrase, lastRoom, lastPhrase);
+                        weight = getPhraseBasicWeight(kwl.phrase, lastTopic, lastPhrase);
                     }
                     weight = weight * kwl.weight;
                     foundPhrases.put(kwl.phrase, weight);
@@ -205,14 +215,14 @@ public class Phrases<KeyWordType> {
             }
         }
 
-        // TODO: add cache for the same existing keywords, lastRoom and lastPhrase
+        // TODO: add cache for the same existing keywords, lastTopic and lastPhrase
 
         // sort by weight and return array
         return findPhraseOrdered(foundPhrases);
     }
 
-    // find out, which phrase is the most suitable, using previous room and phrase
-    public Phrase<KeyWordType>[] findPhraseByLast(Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
+    // find out, which phrase is the most suitable, using previous topic and phrase
+    public Phrase<KeyWordType>[] findPhraseByLast(Topic lastTopic, Phrase<KeyWordType> lastPhrase) {
         Hashtable<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
 
         // calculate after-phrase weights
@@ -224,13 +234,13 @@ public class Phrases<KeyWordType> {
             }
         }
 
-        // calculate after-room weights
-        if (lastRoom != null) {
-            List<Phrase<KeyWordType>> phrases = roomStartPhrases.get(lastRoom);
+        // calculate after-topic weights
+        if (lastTopic != null) {
+            List<Phrase<KeyWordType>> phrases = topicStartPhrases.get(lastTopic);
             if (phrases != null) {
                 for (Phrase phrase : phrases) {
                     Float weight = foundPhrases.get(phrase);
-                    weight = weight == null ? FOLLOW_EXCLUSIVE_ROOM_COST : weight * FOLLOW_EXCLUSIVE_ROOM_COST;
+                    weight = weight == null ? FOLLOW_EXCLUSIVE_TOPIC_COST : weight * FOLLOW_EXCLUSIVE_TOPIC_COST;
                     foundPhrases.put(phrase, weight);
                 }
             }
@@ -241,14 +251,14 @@ public class Phrases<KeyWordType> {
     }
 
     // find out, which phrase is the most suitable
-//    public Phrase<KeyWordType> findPhrase(KeyWordType[] srchWords, Phrase.Room lastRoom, Phrase<KeyWordType> lastPhrase) {
+//    public Phrase<KeyWordType> findPhrase(KeyWordType[] srchWords, Topic lastTopic, Phrase<KeyWordType> lastPhrase) {
 //        // search by keywords
-//        Phrase phrase = findPhraseByKeywords(srchWords, lastRoom, lastPhrase);
+//        Phrase phrase = findPhraseByKeywords(srchWords, lastTopic, lastPhrase);
 //        if (phrase != null) {
 //            return phrase;
 //        }
 //        // search by previous state
-//        phrase = findPhraseByLast(lastRoom, lastPhrase);
+//        phrase = findPhraseByLast(lastTopic, lastPhrase);
 //        if (phrase != null) {
 //            return phrase;
 //        }

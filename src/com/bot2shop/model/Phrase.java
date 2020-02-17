@@ -11,11 +11,9 @@ import java.util.Set;
 
 public class Phrase<KeyWordType> {
 
-    public enum GoesAfter {AFTERPREVIOUSSTRICT, AFTERPREVIOUS, AFTERROOMSTRICT, AFTERROOM, AFTERALL}
+    public enum GoesAfter {AFTERPREVIOUSSTRICT, AFTERPREVIOUS, AFTERTOPICSTRICT, AFTERTOPIC, AFTERALL}
 
     public enum Action {SAY, ADDTOCART, SAVEINFO, ENDSESSION}
-
-    public enum Room {HELLO, ORDER, ORDERITEM, CONTACTS, FINISH}
 
     private static int nextId = 0; // autoincrement next identifier of Phrase for Hashtable
     public Integer id = nextId++; // autoincrement identifier of Phrase for Hashtable
@@ -31,17 +29,17 @@ public class Phrase<KeyWordType> {
 
     public Action action = Action.SAY; // this word means this Action
     public String sayText = null; // Action=SAY, what to say
-    public ShopItem addtocartItem = null; // Action=ADDTOCART, item to add
-    public String saveinfoType = null; // Action=SAVEINFO, what we are saving
+    //public ShopItem addtocartItem = null; // Action=ADDTOCART, item to add
+    //public String saveinfoType = null; // Action=SAVEINFO, what we are saving
 
-    public Room room = null; // speaking room
-    //public Room roomStart = null; // speaking room, which starts from this Phrase
-    public boolean isRoomStart = false; // this Phrase is a starter of this Room
-    public Room roomNext = null; // speaking room, if this Phrase found
+    public String topicShortName = ""; // speaking topic name
+    public Topic topic = null; // speaking topic
+    //public boolean isTopicStart = false; // this Phrase is a starter of this Topic
+    //public Topic topicNext = null; // speaking topic, if this Phrase found
 
     public Set<Phrase<KeyWordType>> afterPhrases = new HashSet<Phrase<KeyWordType>>(); // after what Phrases this goes
 
-    public Room[] unknownForRooms = {}; // this Phrase is a Room's unknown phrase
+    public boolean isTopicUnknown; // this Phrase is a Topic unknown phrase
     public Integer[] nextPhrasesIfUnknownId = {}; // id of Phrase if unknown
     public Phrase<KeyWordType>[] nextPhrasesIfUnknown; // next Phrase if unknown
 

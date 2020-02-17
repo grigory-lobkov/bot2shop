@@ -4,6 +4,7 @@ import com.bot2shop.interfaces.IDictionary;
 import com.bot2shop.interfaces.ILogger;
 import com.bot2shop.model.Phrase;
 import com.bot2shop.model.Phrase.*;
+import com.bot2shop.model.Topic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,9 @@ import java.util.List;
 
 public class InlineDictionary<KeyWordType> implements IDictionary {
 
-    private List<Phrase<KeyWordType>> rawPhraseList; // temporary list for result
-    private Room roomNow; // default room for currently adding words
+    private List<Phrase<KeyWordType>> rawPhraseList; // list of phrases
+    private List<Topic> rawTopicList; // list of topics
+    private String topicNow; // default topic for currently adding words
 
     // logger
     private ILogger logger;
@@ -27,7 +29,7 @@ public class InlineDictionary<KeyWordType> implements IDictionary {
     // one line generation helper
     public Phrase<KeyWordType> newP(String sayText, String[] keyWords) {
         Phrase<KeyWordType> p = new Phrase<KeyWordType>();
-        p.room = roomNow;
+        p.topicShortName = topicNow;
         p.action = Action.SAY;
         p.sayText = sayText;
         p.keyWords = keyWords;
@@ -39,23 +41,44 @@ public class InlineDictionary<KeyWordType> implements IDictionary {
         return newP(sayText, new String[]{});
     }
 
-    // returns list of phrases from storage
-    public List<Phrase<KeyWordType>> getRawPhraseList() {
+    public String newT(String shortName, String name) {
+        Topic t = new Topic();
+        t.shortName = shortName;
+        t.name = name;
+        rawTopicList.add(t);
+        return shortName;
+    }
+
+    public String newT(String shortName) {
+        return newT(shortName, "");
+    }
+
+    // do actions, prepare connection/data
+    public void process() {
+        rawTopicList = new ArrayList<Topic>();
         rawPhraseList = new ArrayList<Phrase<KeyWordType>>();
 
+        //
+        // list of phrases - список фраз
+        //
+        // inside keywords, you can use only alphabet characters, without spaces, etc
         // в качестве ключей используйте только слова, без пробелов и знаков припинания
+        //
+        // each newT call adds the rawTopicList automatically
+        // каждый вызов newT автоматически добавляет тему в результирующий список
+        // each newP call adds the rawPhraseList automatically
         // каждый вызов newP автоматически добавляет фразу в результирующий список
 
         // Секция приветствия
-        roomNow = Room.HELLO;
+        topicNow = newT("HELLO");
 
         Phrase pWelcome = newP("Здравствуйте. Я могу помочь Вам быстро оформить заказ в суши-баре Сакура. Вы можете заказать роллы, суши, горячее и десерты.",
                 new String[]{"/start"});
-        pWelcome.isRoomStart = true;
+        //pWelcome.isTopicStart = true;
 
         Phrase pHello = newP("Рад приветствовать! Что бы Вы хотели у нас заказать?",
                 new String[]{"Привет", "Здравствуй", "Здравствуйте", "Здорово", "Хай", "Hi", "Hello"});
-        pHello.roomNext = Room.ORDER;
+        //pHello.topicNext = Topic.ORDER;
 
         Phrase pHelloTO = newP("У нас очень вкусные роллы! Их изготавливает повар с черным поясом по Японской кухне!");
         pHelloTO.timeoutSec = 30; // 30 sec
@@ -77,19 +100,27 @@ public class InlineDictionary<KeyWordType> implements IDictionary {
         pHelloTO.timeoutSec = 600; // 10 min
 
         // Секция заказа
-        roomNow = Room.ORDER;
+        topicNow = newT("ORDER");
 
         Phrase pOrder = newP("Выберите одну из категорий нашего ассортимента: роллы, суши, горячее, десерты",
                 new String[]{"Заказать", "Заказ", "Заказывать"});
-        pOrder.isRoomStart = true;
+        //pOrder.isTopicStart = true;
 
         // Завершение, выход
-        roomNow = Room.FINISH;
+        topicNow = newT("FINISH");
 
         Phrase pFinish = newP("Спасибо! Приходите к нам ещё!",
                 new String[]{"/quit", "/exit"});
+    }
 
+    // returns list of phrases from storage
+    public List<Phrase<KeyWordType>> getPhraseList() {
         return rawPhraseList;
+    }
+
+    // returns list of topics from storage
+    public List<Topic> getTopicList() {
+        return rawTopicList;
     }
 
 }
