@@ -27,10 +27,10 @@ public class Phrases<KeyWordType> {
         }
     }
 
-    private Map<Integer, Phrase<KeyWordType>> phrases;
-    private Map<KeyWordType, List<KeyWordLink>> keyWordsTbl;
-    private Map<Topic, List<Phrase<KeyWordType>>> topicStartPhrases;
-    private Map<Phrase<KeyWordType>, List<Phrase<KeyWordType>>> lastPhrasePhrases;
+    private Map<Integer, Phrase<KeyWordType>> phrases;                    // phrase table
+    private Map<KeyWordType, List<KeyWordLink>> keyWordsTbl;              // all keywords table
+    private Map<Topic, List<Phrase<KeyWordType>>> topicPhrasesIfUnknown;  // phrases for unknown in topics
+    private Map<Phrase<KeyWordType>, Map<KeyWordType, List<KeyWordLink>>> strictPhraseKeyWordsTbl;  // strict phrases keywords
 
     // logger
     private ILogger logger;
@@ -63,8 +63,8 @@ public class Phrases<KeyWordType> {
         phrases = new Hashtable<Integer, Phrase<KeyWordType>>();
         keyWordsTbl = new Hashtable<KeyWordType, List<KeyWordLink>>();
         List<Phrase<KeyWordType>> phraseList = dictionary.getPhraseList();
-        topicStartPhrases = new Hashtable<Topic, List<Phrase<KeyWordType>>>();
-        lastPhrasePhrases = new Hashtable<Phrase<KeyWordType>, List<Phrase<KeyWordType>>>();
+        topicPhrasesIfUnknown = new Hashtable<Topic, List<Phrase<KeyWordType>>>();
+        strictPhraseKeyWordsTbl = new Hashtable<Phrase<KeyWordType>, Map<KeyWordType, List<KeyWordLink>>>();
 
 
         // iteration 1
@@ -90,15 +90,15 @@ public class Phrases<KeyWordType> {
                 kwlList.add(kwl);
             }
 
-            // prepare topicStartPhrases hashtable
-//            for (Topic topic : phrase.unknownForTopics) {
-////                List<Phrase<KeyWordType>> topicList = topicStartPhrases.get(topic);
-////                if (topicList == null) {
-////                    topicList = new ArrayList<Phrase<KeyWordType>>();
-////                    topicStartPhrases.put(topic, topicList);
-////                }
-////                topicList.add(phrase);
-////            }
+            // prepare topicPhrasesIfUnknown hashtable
+            if(phrase.isTopicUnknown) {
+                List<Phrase<KeyWordType>> topicList = topicPhrasesIfUnknown.get(phrase.topic);
+                if (topicList == null) {
+                    topicList = new ArrayList<Phrase<KeyWordType>>();
+                    topicPhrasesIfUnknown.put(phrase.topic, topicList);
+                }
+                topicList.add(phrase);
+            }
         }
 
         // iteration 2
@@ -114,14 +114,7 @@ public class Phrases<KeyWordType> {
                     added.add(phrase2);
                 }
                 phrase.nextPhrases = (Phrase<KeyWordType>[]) added.toArray();
-            }/* else if (phrase.nextPhrases.length > 0) {
-                HashSet<Integer> added = new HashSet<Integer>();
-                for (Phrase<KeyWordType> phrase2 : phrase.nextPhrases) {
-                    phrase2.afterPhrases.add(phrase2);
-                    added.add(phrase2.id);
-                }
-                phrase.nextPhrasesId = (Integer[]) added.toArray();
-            }*/
+            }
 
             // prepare lastPhrasePhrases hashtable
             if (phrase.nextPhrasesIfUnknownId.length > 0) {
@@ -131,6 +124,24 @@ public class Phrases<KeyWordType> {
                     phs[i] = phrases.get(phrase.nextPhrasesIfUnknownId[i]);
                 }
                 phrase.nextPhrasesIfUnknown = phs;
+            }
+
+            // prepare strictPhraseKeyWordsTbl hashtable
+            if(phrase.strictQuestion) {
+                Map<KeyWordType, List<KeyWordLink>> keyWTbl = new Hashtable<KeyWordType, List<KeyWordLink>>();
+                for(Phrase<KeyWordType> p:phrase.nextPhrases) {
+                    for (Map.Entry<KeyWordType, Float> entry : p.keyWordsTbl.entrySet()) {
+                        KeyWordType keyWord = entry.getKey();
+                        KeyWordLink kwl = new KeyWordLink(p, entry.getValue());
+                        List<KeyWordLink> kwlList = keyWTbl.get(keyWord);
+                        if (kwlList == null) {
+                            kwlList = new ArrayList<KeyWordLink>();
+                            keyWTbl.put(keyWord, kwlList);
+                        }
+                        kwlList.add(kwl);
+                    }
+                }
+                strictPhraseKeyWordsTbl.put(phrase, keyWTbl);
             }
         }
     }
@@ -193,6 +204,7 @@ public class Phrases<KeyWordType> {
     // find out, which phrase is the most suitable, using keywords
     public Phrase<KeyWordType>[] findPhraseByKeywords(KeyWordType[] srchWords, Topic lastTopic, Phrase<KeyWordType> lastPhrase) {
         Map<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
+        Map<KeyWordType, List<KeyWordLink>> keyWordsTbl = lastPhrase.strictQuestion ? strictPhraseKeyWordsTbl.get(lastPhrase) : this.keyWordsTbl;
 
         // calculate weights
         for (KeyWordType srchWord : srchWords) {
@@ -235,7 +247,7 @@ public class Phrases<KeyWordType> {
 
         // calculate after-topic weights
         if (lastTopic != null) {
-            List<Phrase<KeyWordType>> phrases = topicStartPhrases.get(lastTopic);
+            List<Phrase<KeyWordType>> phrases = topicPhrasesIfUnknown.get(lastTopic);
             if (phrases != null) {
                 for (Phrase phrase : phrases) {
                     Float weight = foundPhrases.get(phrase);

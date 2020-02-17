@@ -195,6 +195,9 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
             String value = node.getTextContent();
             try {
                 switch (name) {
+                    case "id":
+                        p.id = Integer.parseInt(value);
+                        break;
                     case "sayText":
                         p.sayText = value.replaceAll("\n[\\s]*"," ").replace("\\n","\n");
                         break;
