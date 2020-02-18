@@ -67,11 +67,13 @@ public class MakeAction<KeyWordType> {
 
     // Process incoming user message
     Phrase.Action processMessage(Session session, String inText) {
+        Phrase<KeyWordType> topicObserver = null;
 
         // search by keywords
         KeyWordType[] userWords = preparator.prepareInput(inText);
         Phrase<KeyWordType>[] foundPhrases = phrases.findPhraseByKeywords(userWords, session.lastTopic, session.lastPhrase);
         if (foundPhrases != null && foundPhrases.length > 0) {
+            System.out.println(foundPhrases.length);
             for (Phrase p : foundPhrases) {
                 if (p.showOnlyOnce) if (!session.getShown(p)) continue;
                 if (p.showChance < 100) {

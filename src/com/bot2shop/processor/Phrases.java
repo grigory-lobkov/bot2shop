@@ -31,6 +31,7 @@ public class Phrases<KeyWordType> {
     private Map<KeyWordType, List<KeyWordLink>> keyWordsTbl;              // all keywords table
     private Map<Topic, List<Phrase<KeyWordType>>> topicPhrasesIfUnknown;  // phrases for unknown in topics
     private Map<Phrase<KeyWordType>, Map<KeyWordType, List<KeyWordLink>>> strictPhraseKeyWordsTbl;  // strict phrases keywords
+    private Map<Topic, List<Phrase<KeyWordType>>> topicObserveTitles;     // topic observers for titles
 
     // logger
     private ILogger logger;
@@ -65,6 +66,7 @@ public class Phrases<KeyWordType> {
         List<Phrase<KeyWordType>> phraseList = dictionary.getPhraseList();
         topicPhrasesIfUnknown = new Hashtable<Topic, List<Phrase<KeyWordType>>>();
         strictPhraseKeyWordsTbl = new Hashtable<Phrase<KeyWordType>, Map<KeyWordType, List<KeyWordLink>>>();
+        topicObserveTitles = new Hashtable<Topic, List<Phrase<KeyWordType>>>();
 
 
         // iteration 1
@@ -96,6 +98,16 @@ public class Phrases<KeyWordType> {
                 if (topicList == null) {
                     topicList = new ArrayList<Phrase<KeyWordType>>();
                     topicPhrasesIfUnknown.put(phrase.topic, topicList);
+                }
+                topicList.add(phrase);
+            }
+
+            // prepare topicObserveTitles hashtable
+            if (phrase.action == Phrase.Action.OBSERVETITLES) {
+                List<Phrase<KeyWordType>> topicList = topicObserveTitles.get(phrase.topic);
+                if (topicList == null) {
+                    topicList = new ArrayList<Phrase<KeyWordType>>();
+                    topicObserveTitles.put(phrase.topic, topicList);
                 }
                 topicList.add(phrase);
             }
@@ -201,10 +213,45 @@ public class Phrases<KeyWordType> {
         return result;
     }
 
+    // find phrase in hashMap, sorted from maximum to minimum weight as value, only relevant
+    Phrase<KeyWordType>[] findPhraseRelevantOrdered(Map<Phrase<KeyWordType>, Float> phrasesMap) {
+
+        // create temporary list
+        List<Map.Entry<Phrase<KeyWordType>, Float>> entries = new ArrayList<Map.Entry<Phrase<KeyWordType>, Float>>(
+                phrasesMap.entrySet()
+        );
+
+        // sort list
+        Collections.sort(entries, new Comparator<Map.Entry<Phrase<KeyWordType>, Float>>() {
+            public int compare(Map.Entry<Phrase<KeyWordType>, Float> a, Map.Entry<Phrase<KeyWordType>, Float> b) {
+                return -Float.compare(b.getValue(), a.getValue());
+            }
+        });
+
+        // generate array
+        int i = 0;
+        Float minWeight = null;
+        List<Phrase<KeyWordType>> result = new ArrayList<Phrase<KeyWordType>>();
+        for (Map.Entry<Phrase<KeyWordType>, Float> e : entries) {
+            if (minWeight == null) {
+                minWeight = e.getValue() * PHRASE_CUT_LIST_MULTIPLIER;
+                result.add(e.getKey());
+            } else {
+                if (minWeight > e.getValue()) break;
+                result.add(e.getKey());
+            }
+        }
+        return result.toArray(new Phrase[result.size()]);
+    }
+
     // find out, which phrase is the most suitable, using keywords
     public Phrase<KeyWordType>[] findPhraseByKeywords(KeyWordType[] srchWords, Topic lastTopic, Phrase<KeyWordType> lastPhrase) {
         Map<Phrase<KeyWordType>, Float> foundPhrases = new Hashtable<Phrase<KeyWordType>, Float>();
-        Map<KeyWordType, List<KeyWordLink>> keyWordsTbl = lastPhrase.strictQuestion ? strictPhraseKeyWordsTbl.get(lastPhrase) : this.keyWordsTbl;
+        Map<KeyWordType, List<KeyWordLink>> keyWordsTbl = this.keyWordsTbl;
+        if (lastPhrase != null && lastPhrase.strictQuestion) {
+            keyWordsTbl = strictPhraseKeyWordsTbl.get(lastPhrase);
+            if (keyWordsTbl == null) return null;
+        }
 
         // calculate weights
         for (KeyWordType srchWord : srchWords) {
@@ -229,7 +276,7 @@ public class Phrases<KeyWordType> {
         // TODO: add cache for the same existing keywords, lastTopic and lastPhrase
 
         // sort by weight and return array
-        return findPhraseOrdered(foundPhrases);
+        return findPhraseRelevantOrdered(foundPhrases);
     }
 
     // find out, which phrase is the most suitable, using previous topic and phrase
@@ -258,7 +305,7 @@ public class Phrases<KeyWordType> {
         }
 
         // sort by weight and return array
-        return findPhraseOrdered(foundPhrases);
+        return findPhraseRelevantOrdered(foundPhrases);
     }
 
     // find out, which phrase is the most suitable

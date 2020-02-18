@@ -32,6 +32,7 @@ public class Phrase<KeyWordType> {
     public GoesAfter goesAfter = GoesAfter.AFTERALL; // after what we are expecting this Phrase
     public Action action = Action.SAY; // this word means this Action
 
+    public String title = null; // Short description to show user options
     public String sayText = null; // Action=SAY, what to say
     //public ShopItem addtocartItem = null; // Action=ADDTOCART, item to add
     //public String saveinfoType = null; // Action=SAVEINFO, what we are saving

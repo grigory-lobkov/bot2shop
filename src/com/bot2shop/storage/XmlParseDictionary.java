@@ -198,8 +198,11 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
                     case "id":
                         p.id = Integer.parseInt(value);
                         break;
+                    case "title":
+                        p.sayText = value;
+                        break;
                     case "sayText":
-                        p.sayText = value.replaceAll("\n[\\s]*"," ").replace("\\n","\n");
+                        p.sayText = value.replaceAll("\n[\\s]*", " ").replace("\\n", "\n");
                         break;
                     case "keyWords":
                         String[] vals = value.split("[, ?.@]+");
