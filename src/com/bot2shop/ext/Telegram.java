@@ -20,10 +20,18 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Math.toIntExact;
 
 public class Telegram extends TelegramLongPollingBot implements IConnection {
 
@@ -64,10 +72,29 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
             },
         }*/
         if (update.hasMessage() && update.getMessage().hasText()) {
+            // process sent text
             Message inMessage = update.getMessage();
             String text = inMessage.getText();
             String chatId = inMessage.getChatId().toString();
             incomeTextProcessor.process(id, chatId, text);
+        } else if (update.hasCallbackQuery()) {
+            // process InlineKeyboardButton
+            Message inMessage = update.getCallbackQuery().getMessage();
+            String text = update.getCallbackQuery().getData();
+            Integer message_id = inMessage.getMessageId();
+            Long chat_id = inMessage.getChatId();
+
+            String answer = text;
+            EditMessageText updateMessage = new EditMessageText()
+                    .setChatId(chat_id)
+                    .setMessageId(message_id)
+                    .setText(answer);
+            try {
+                execute(updateMessage);
+                incomeTextProcessor.process(id, chat_id.toString(), text);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -85,12 +112,39 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
         return false;
     }
 
+    // Send title variants to session
+    public boolean sendTextVariants(String sessionId, String textMessage, String[] variants) {
+        try {
+            List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>(variants.length);
+            for (String variant : variants) {
+                List<InlineKeyboardButton> rowInline = new ArrayList<>(1);
+                InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton()
+                        .setText(variant)
+                        .setCallbackData(variant);
+                rowInline.add(inlineKeyboardButton);
+                rowsInline.add(rowInline);
+            }
+            InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup()
+                    .setKeyboard(rowsInline);
+
+            SendMessage outMessage = new SendMessage()
+                    .setChatId(Long.parseLong(sessionId))
+                    .setText(textMessage)
+                    .setReplyMarkup(markupInline);
+            this.execute(outMessage);
+            return true;
+        } catch (TelegramApiException e) {
+            logErrorProcessor.process(id, sessionId, e);
+        }
+        return false;
+    }
+
     // Register to external server, awaiting for users
     public void start() {
         // check, if parameters set
         if (Strings.isNullOrEmpty(token) || Strings.isNullOrEmpty(username)) {
             Exception e = new RuntimeException("Telegram. Not all parameters bound, use first: setup(\"username\", \"token\")");
-            logErrorProcessor.process(id, "", new RuntimeException(e));
+            logErrorProcessor.process(id, "", e);
             return;
         }
         // init telegram
@@ -98,7 +152,7 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
         try {
             botsApi.registerBot(this);
         } catch (TelegramApiRequestException e) {
-            e.printStackTrace();
+            logErrorProcessor.process(id, "", e);
         }
     }
 

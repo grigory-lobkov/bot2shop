@@ -25,6 +25,15 @@ public class ConsoleChat implements IConnection {
         return true;
     }
 
+    // Send title variants to session
+    public boolean sendTextVariants(String sessionId, String textMessage, String[] variants) {
+        System.out.println("> " + textMessage);
+        for (String v : variants) {
+            System.out.println("v> " + v);
+        }
+        return true;
+    }
+
     // Register to external server, awaiting for users
     public void start() {
         String input;

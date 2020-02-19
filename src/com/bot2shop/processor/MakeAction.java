@@ -5,6 +5,8 @@ import com.bot2shop.interfaces.IPreparator;
 import com.bot2shop.model.Phrase;
 import com.bot2shop.model.Session;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SplittableRandom;
 
 /*
@@ -38,7 +40,7 @@ public class MakeAction<KeyWordType> {
     }
 
     // do Phrase Action
-    private Phrase.Action doPhraseAction(Phrase phrase, Session session) {
+    private Phrase.Action doPhraseAction(Phrase phrase, Session session, Phrase<KeyWordType>[] foundPhrases) {
         Phrase.Action result = null;
         switch (phrase.action) {
             case SAY:
@@ -73,15 +75,10 @@ public class MakeAction<KeyWordType> {
         KeyWordType[] userWords = preparator.prepareInput(inText);
         Phrase<KeyWordType>[] foundPhrases = phrases.findPhraseByKeywords(userWords, session.lastTopic, session.lastPhrase);
         if (foundPhrases != null && foundPhrases.length > 0) {
-            System.out.println(foundPhrases.length);
-            for (Phrase p : foundPhrases) {
-                if (p.showOnlyOnce) if (!session.getShown(p)) continue;
-                if (p.showChance < 100) {
-                    int rnd = random.nextInt(100);
-                    if (rnd >= p.showChance) continue;
-                }
-                if (p.showOnlyOnce) session.setShown(p);
-                return doPhraseAction(p, session);
+            if (foundPhrases.length == 1) {
+                return doPhraseAction(foundPhrases[0], session, null);
+            } else {
+                //TODO: find master phrase and send variants
             }
         }
 
@@ -95,7 +92,7 @@ public class MakeAction<KeyWordType> {
                     if (rnd >= p.showChance) continue;
                 }
                 if (p.showOnlyOnce) session.setShown(p);
-                return doPhraseAction(p, session);
+                return doPhraseAction(p, session, null);
             }
         }
 
@@ -105,7 +102,7 @@ public class MakeAction<KeyWordType> {
             foundPhrases = phrases.findPhraseByKeywords(startUserWords, null, null);
             if (foundPhrases != null && foundPhrases.length > 0) {
                 for (Phrase p : foundPhrases) {
-                    return doPhraseAction(p, session);
+                    return doPhraseAction(p, session, null);
                 }
             }
         }
