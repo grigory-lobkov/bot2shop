@@ -199,7 +199,7 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
                         p.id = Integer.parseInt(value);
                         break;
                     case "title":
-                        p.sayText = value;
+                        p.title = value;
                         break;
                     case "sayText":
                         p.sayText = value.replaceAll("\n[\\s]*", " ").replace("\\n", "\n");

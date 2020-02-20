@@ -32,6 +32,7 @@ public class Phrases<KeyWordType> {
     private Map<Topic, List<Phrase<KeyWordType>>> topicPhrasesIfUnknown;  // phrases for unknown in topics
     private Map<Phrase<KeyWordType>, Map<KeyWordType, List<KeyWordLink>>> strictPhraseKeyWordsTbl;  // strict phrases keywords
     private Map<Topic, List<Phrase<KeyWordType>>> topicObserveTitles;     // topic observers for titles
+    private Map<String, List<Phrase<KeyWordType>>> phrasesTitles;         // all phrases titles
 
     // logger
     private ILogger logger;
@@ -67,6 +68,7 @@ public class Phrases<KeyWordType> {
         topicPhrasesIfUnknown = new Hashtable<Topic, List<Phrase<KeyWordType>>>();
         strictPhraseKeyWordsTbl = new Hashtable<Phrase<KeyWordType>, Map<KeyWordType, List<KeyWordLink>>>();
         topicObserveTitles = new Hashtable<Topic, List<Phrase<KeyWordType>>>();
+        phrasesTitles = new Hashtable<String, List<Phrase<KeyWordType>>>();
 
 
         // iteration 1
@@ -108,6 +110,16 @@ public class Phrases<KeyWordType> {
                 if (topicList == null) {
                     topicList = new ArrayList<Phrase<KeyWordType>>();
                     topicObserveTitles.put(phrase.topic, topicList);
+                }
+                topicList.add(phrase);
+            }
+
+            // prepare phrasesTitles hashtable
+            if (phrase.title != null) {
+                List<Phrase<KeyWordType>> topicList = phrasesTitles.get(phrase.title);
+                if (topicList == null) {
+                    topicList = new ArrayList<Phrase<KeyWordType>>();
+                    phrasesTitles.put(phrase.title, topicList);
                 }
                 topicList.add(phrase);
             }
@@ -308,19 +320,34 @@ public class Phrases<KeyWordType> {
         return findPhraseRelevantOrdered(foundPhrases);
     }
 
-    // find out, which phrase is the most suitable
-//    public Phrase<KeyWordType> findPhrase(KeyWordType[] srchWords, Topic lastTopic, Phrase<KeyWordType> lastPhrase) {
-//        // search by keywords
-//        Phrase phrase = findPhraseByKeywords(srchWords, lastTopic, lastPhrase);
-//        if (phrase != null) {
-//            return phrase;
-//        }
-//        // search by previous state
-//        phrase = findPhraseByLast(lastTopic, lastPhrase);
-//        if (phrase != null) {
-//            return phrase;
-//        }
-//        return null;
-//    }
+    // find out, which phrase is the most suitable, using previous topic and phrase
+    public Phrase<KeyWordType>[] findTopicObserver(Topic lastTopic) {
+        List<Phrase<KeyWordType>> found = null;
+
+        if (lastTopic != null)
+            found = topicObserveTitles.get(lastTopic);
+
+        if (found == null) {
+            for (List<Phrase<KeyWordType>> l : topicObserveTitles.values()) {
+                if (l.size() > 0) {
+                    found = new ArrayList<Phrase<KeyWordType>>(l);
+                    break; // we no need too much values for now
+                }
+            }
+        }
+        return found.toArray(new Phrase[found.size()]);
+    }
+
+    // find phrases by their title
+    public Phrase<KeyWordType>[] findPhraseByTitle(String title) {
+
+        if (title != null) {
+            List<Phrase<KeyWordType>> found = phrasesTitles.get(title);
+            if (found != null)
+                return found.toArray(new Phrase[found.size()]);
+        }
+
+        return null;
+    }
 
 }
