@@ -37,7 +37,7 @@ public class Phrase<KeyWordType> {
     //public ShopItem addtocartItem = null; // Action=ADDTOCART, item to add
     //public String saveinfoType = null; // Action=SAVEINFO, what we are saving
 
-    public String topicShortName = ""; // speaking topic name
+    public Integer topicId = -1; // speaking topic identifier
     //public boolean isTopicStart = false; // this Phrase is a starter of this Topic
 
     public boolean isTopicUnknown; // this Phrase is a Topic unknown phrase
@@ -52,8 +52,8 @@ public class Phrase<KeyWordType> {
 
     public Map<KeyWordType, Float> keyWordsTbl; // key words with weight as value, lead to Action
     public Phrase<KeyWordType>[] nextPhrases; // Phrase's expected after this Phrase
-    public Topic topic = null; // speaking topic
-    public Set<Phrase<KeyWordType>> afterPhrases = new HashSet<Phrase<KeyWordType>>(); // after what Phrases this goes
+    public Topic topic; // speaking topic
+    public Set<Phrase<KeyWordType>> afterPhrases; // after what Phrases this goes
     public Phrase<KeyWordType>[] nextPhrasesIfUnknown; // next Phrase if unknown
 
 

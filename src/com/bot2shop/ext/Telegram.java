@@ -83,7 +83,7 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
             // process InlineKeyboardButton
             CallbackQuery inCallbackQuery = update.getCallbackQuery();
             Message inMessage = inCallbackQuery.getMessage();
-            String text = inCallbackQuery.getData();
+            String callbackData = inCallbackQuery.getData();
             Long chatId = inMessage.getChatId();
 
             try {
@@ -91,10 +91,10 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
 //                EditMessageText updateMessage = new EditMessageText()
 //                        .setChatId(chatId)
 //                        .setMessageId(inMessage.getMessageId())
-//                        .setText(text);
+//                        .setText(callbackData); // we need to find text option, not callback message
 //                execute(updateMessage);
                 // process callback
-                incomeTextProcessor.process(id, chatId.toString(), text);
+                incomeTextProcessor.process(id, chatId.toString(), callbackData);
             } catch (Exception e) {
                 logErrorProcessor.process(id, chatId.toString(), e);
             }

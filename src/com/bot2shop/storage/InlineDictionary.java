@@ -18,7 +18,7 @@ public class InlineDictionary<KeyWordType> implements IDictionary {
 
     private List<Phrase<KeyWordType>> rawPhraseList; // list of phrases
     private List<Topic> rawTopicList; // list of topics
-    private String topicNow; // default topic for currently adding words
+    private Integer topicNow; // default topic for currently adding words
 
     // logger
     private ILogger logger;
@@ -29,7 +29,7 @@ public class InlineDictionary<KeyWordType> implements IDictionary {
     // one line generation helper
     public Phrase<KeyWordType> newP(String sayText, String[] keyWords) {
         Phrase<KeyWordType> p = new Phrase<KeyWordType>();
-        p.topicShortName = topicNow;
+        p.topicId = topicNow;
         p.action = Action.SAY;
         p.sayText = sayText;
         p.keyWords = keyWords;
@@ -41,15 +41,15 @@ public class InlineDictionary<KeyWordType> implements IDictionary {
         return newP(sayText, new String[]{});
     }
 
-    public String newT(String shortName, String name) {
+    public Integer newT(String shortName, String name) {
         Topic t = new Topic();
         t.shortName = shortName;
         t.name = name;
         rawTopicList.add(t);
-        return shortName;
+        return t.id;
     }
 
-    public String newT(String shortName) {
+    public Integer newT(String shortName) {
         return newT(shortName, "");
     }
 

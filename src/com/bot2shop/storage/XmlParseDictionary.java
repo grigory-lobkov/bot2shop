@@ -19,15 +19,19 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
 
     // logger
     private ILogger logger;
+
     public void setLogger(ILogger logger) {
         this.logger = logger;
     }
+
     private void logError(Exception e) {
         logger.LogError(-1, null, e);
     }
+
     private void logError(String text) {
         logError(new RuntimeException(text));
     }
+
     private void logError(Exception e, String text) {
         Exception re = new RuntimeException(text + ": " + e.getMessage());
         re.setStackTrace(e.getStackTrace());
@@ -135,7 +139,7 @@ public class XmlParseDictionary<KeyWordType> implements IDictionary {
 
             Phrase<KeyWordType> p = new Phrase<KeyWordType>();
             rawPhraseList.add(p);
-            p.topic = topic;
+            p.topicId = topic.id;
             if (node.hasAttributes()) {
                 NamedNodeMap nodeMap = node.getAttributes();
                 processPhraseAtributes(p, nodeMap);

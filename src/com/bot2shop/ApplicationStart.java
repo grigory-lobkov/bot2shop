@@ -28,12 +28,12 @@ class ApplicationStart<KeyWordType> {
         dictionary.process();
         topics.setDictionary(dictionary);
         phrases.setLogger(logger);
-        phrases.setTopics(topics);
         phrases.setPreparator(preparator);
+        phrases.setTopics(topics);
         phrases.setDictionary(dictionary);
         makeActionProcessor.setLogger(logger);
-        makeActionProcessor.setPhrases(phrases);
         makeActionProcessor.setPreparator(preparator);
+        makeActionProcessor.setPhrases(phrases);
         sessions.setLogger(logger);
         connections.setLogger(logger);
         connections.setSessions(sessions);

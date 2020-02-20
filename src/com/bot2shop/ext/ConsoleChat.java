@@ -29,7 +29,7 @@ public class ConsoleChat implements IConnection {
     public boolean sendTextVariants(String sessionId, String textMessage, String[] variants, String[] callbacks) {
         System.out.println("> " + textMessage);
         for (int i = 0; i < variants.length; i++) {
-            System.out.println(callbacks[i] + "> " + variants[i]);
+            System.out.println(callbacks[i] + " > " + variants[i]);
         }
         return true;
     }

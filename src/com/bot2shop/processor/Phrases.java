@@ -74,6 +74,10 @@ public class Phrases<KeyWordType> {
         // iteration 1
         for (Phrase<KeyWordType> phrase : phraseList) {
 
+            // init some phrase values
+            phrase.topic = phrase.topicId >= 0 ? topics.getById(phrase.topicId) : null;
+            phrase.afterPhrases = new HashSet<Phrase<KeyWordType>>();
+
             // prepare phrases hashtable
             phrases.put(phrase.id, phrase);
 
