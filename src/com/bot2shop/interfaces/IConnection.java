@@ -25,7 +25,7 @@ public interface IConnection {
     boolean sendText(String sessionId, String textMessage);
 
     // Send title variants to session, if success, returns true
-    boolean sendTextVariants(String sessionId, String textMessage, String[] variants);
+    boolean sendTextVariants(String sessionId, String textMessage, String[] variants, String[] callbacks);
 
     // Getter and setter of integer identifier of connection
     void setConnId(int id);

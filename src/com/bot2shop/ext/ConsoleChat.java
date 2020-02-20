@@ -26,10 +26,10 @@ public class ConsoleChat implements IConnection {
     }
 
     // Send title variants to session
-    public boolean sendTextVariants(String sessionId, String textMessage, String[] variants) {
+    public boolean sendTextVariants(String sessionId, String textMessage, String[] variants, String[] callbacks) {
         System.out.println("> " + textMessage);
-        for (String v : variants) {
-            System.out.println("v> " + v);
+        for (int i = 0; i < variants.length; i++) {
+            System.out.println(callbacks[i] + "> " + variants[i]);
         }
         return true;
     }

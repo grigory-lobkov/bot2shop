@@ -74,14 +74,17 @@ public class MakeAction<KeyWordType> {
     private Phrase.Action doPhraseActionOBSERVETITLES(Phrase phrase, Session session, Phrase<KeyWordType>[] foundPhrases) {
         String outText = phrase.sayText;
         String[] outVariants = new String[foundPhrases.length];
+        String[] callbacks = new String[foundPhrases.length];
         int i = 0;
 
         logger.LogOutcome(session.connId, session.sessionId, outText);
         for (Phrase<KeyWordType> p : foundPhrases) {
-            logger.LogOutcome(session.connId, session.sessionId, p.title);
-            outVariants[i++] = p.title;
+            outVariants[i] = p.title;
+            callbacks[i] = "/id=" + p.id;
+            logger.LogOutcome(session.connId, session.sessionId, callbacks[i] + " > " + outVariants[i]);
+            i++;
         }
-        session.conn.sendTextVariants(session.sessionId, outText, outVariants);
+        session.conn.sendTextVariants(session.sessionId, outText, outVariants, callbacks);
         return phrase.action;
     }
 
@@ -97,8 +100,21 @@ public class MakeAction<KeyWordType> {
 
     // Process incoming user message
     Phrase.Action processMessage(Session session, String inText) {
-        Phrase<KeyWordType> topicObserver = null;
         Phrase<KeyWordType>[] foundPhrases;
+
+        // search by action
+        if(inText!=null && inText.substring(0,1).compareTo("/")==0) {
+            // search by /id=xxx
+            if(inText.substring(0,4).compareTo("/id=")==0) {
+                try {
+                    Integer idx = Integer.parseInt(inText.substring(4));
+                    Phrase<KeyWordType> p = phrases.findPhraseById(idx);
+                    return doPhraseAction(p, session, null);
+                } catch (Exception e) {
+                    logger.LogError(session.connId, session.sessionId, e);
+                }
+            }
+        }
 
         // search by title
         foundPhrases = phrases.findPhraseByTitle(inText);
@@ -119,7 +135,6 @@ public class MakeAction<KeyWordType> {
             if (foundPhrases.length == 1) {
                 return doPhraseAction(foundPhrases[0], session, null);
             } else {
-                //TODO: find master phrase and send variants
                 Phrase<KeyWordType>[] masterPhrases = phrases.findTopicObserver(session.lastTopic);
                 if (masterPhrases.length > 0) {
                     Phrase<KeyWordType> masterPhrase = masterPhrases[0]; // maybe sometime will do a filtering

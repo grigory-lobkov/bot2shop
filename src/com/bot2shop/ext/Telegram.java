@@ -21,6 +21,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -50,6 +51,7 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
         } else {
             username = params[0];
             token = params[1];
+            //TODO: add setChatTitle, setChatDescription: https://core.telegram.org/bots/api#setchattitle
         }
     }
 
@@ -79,21 +81,22 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
             incomeTextProcessor.process(id, chatId, text);
         } else if (update.hasCallbackQuery()) {
             // process InlineKeyboardButton
-            Message inMessage = update.getCallbackQuery().getMessage();
-            String text = update.getCallbackQuery().getData();
-            Integer message_id = inMessage.getMessageId();
-            Long chat_id = inMessage.getChatId();
+            CallbackQuery inCallbackQuery = update.getCallbackQuery();
+            Message inMessage = inCallbackQuery.getMessage();
+            String text = inCallbackQuery.getData();
+            Long chatId = inMessage.getChatId();
 
-            String answer = text;
-            EditMessageText updateMessage = new EditMessageText()
-                    .setChatId(chat_id)
-                    .setMessageId(message_id)
-                    .setText(answer);
             try {
-                execute(updateMessage);
-                incomeTextProcessor.process(id, chat_id.toString(), text);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
+                // Change variants question to single, chosen question ... does it really need!?
+//                EditMessageText updateMessage = new EditMessageText()
+//                        .setChatId(chatId)
+//                        .setMessageId(inMessage.getMessageId())
+//                        .setText(text);
+//                execute(updateMessage);
+                // process callback
+                incomeTextProcessor.process(id, chatId.toString(), text);
+            } catch (Exception e) {
+                logErrorProcessor.process(id, chatId.toString(), e);
             }
         }
     }
@@ -113,14 +116,14 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
     }
 
     // Send title variants to session
-    public boolean sendTextVariants(String sessionId, String textMessage, String[] variants) {
+    public boolean sendTextVariants(String sessionId, String textMessage, String[] variants, String[] callbacks) {
         try {
             List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>(variants.length);
-            for (String variant : variants) {
+            for (int i = 0; i < variants.length; i++) {
                 List<InlineKeyboardButton> rowInline = new ArrayList<>(1);
                 InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton()
-                        .setText(variant)
-                        .setCallbackData(variant);
+                        .setText(variants[i])
+                        .setCallbackData(callbacks[i]);
                 rowInline.add(inlineKeyboardButton);
                 rowsInline.add(rowInline);
             }

@@ -350,4 +350,9 @@ public class Phrases<KeyWordType> {
         return null;
     }
 
+    // find phrase by id
+    public Phrase<KeyWordType> findPhraseById(Integer id) {
+        return id == null ? null : phrases.get(id);
+    }
+
 }
