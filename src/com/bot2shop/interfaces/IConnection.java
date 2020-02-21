@@ -37,8 +37,4 @@ public interface IConnection {
     // Set processor to process income user messages
     void setIncomeTextProcessor(IProcessor<String> incomeTextProcessor);
 
-    // Register to external server, awaiting for users
-    void start();
-
-
 }

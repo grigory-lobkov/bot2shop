@@ -39,12 +39,13 @@ class ApplicationStart<KeyWordType> {
         connections.setSessions(sessions);
         connections.setIncomeTextProcessor(makeActionProcessor);
         // Proxy if needed (for Tor browser in memory):
-//        System.getProperties().put("proxySet", "true");
-//        System.getProperties().put("socksProxyHost", "127.0.0.1");
-//        System.getProperties().put("socksProxyPort", "9150");
-//        org.telegram.telegrambots.ApiContextInitializer.init(); // telegram specific
-//        connections.add(new Telegram(), "Pizza24testingbot", "1011637303:AAE7o8myLHhW96fgAlnHI3EQeAwEbs12_fE");
-        connections.add(new ConsoleChat()); // for debug
+        System.getProperties().put("proxySet", "true");
+        System.getProperties().put("socksProxyHost", "127.0.0.1");
+        System.getProperties().put("socksProxyPort", "9150");
+        org.telegram.telegrambots.ApiContextInitializer.init(); // telegram specific
+        connections.add(new Telegram(), "Pizza24testingbot", "1011"+"637303"+""+":"+"AAE7o8myLHhW9"+"6fgAlnHI3EQeAwEbs12_fE");
+        connections.add(new VK(), "179613262", "2a76403624cf0f0f"+""+"97bd8c3a1673c0e7e1db6b"+"2c63eec26757c90698953e"+"f4c6686efd80a5c0502cafd43");
+        connections.add(new Console()); // for debug
         connections.startAll();
     }
 

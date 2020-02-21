@@ -14,7 +14,7 @@ import com.bot2shop.interfaces.IProcessor;
 
 import java.util.Scanner;
 
-public class ConsoleChat implements IConnection {
+public class Console implements IConnection, Runnable {
 
     public void setup(String... params) {
     } // no need to set up
@@ -35,7 +35,7 @@ public class ConsoleChat implements IConnection {
     }
 
     // Register to external server, awaiting for users
-    public void start() {
+    public void run() {
         String input;
         Scanner in = new Scanner(System.in);
         do {

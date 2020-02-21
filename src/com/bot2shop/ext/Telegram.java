@@ -32,9 +32,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Math.toIntExact;
-
-public class Telegram extends TelegramLongPollingBot implements IConnection {
+public class Telegram extends TelegramLongPollingBot implements IConnection, Runnable {
 
     private String username;
     private String token;
@@ -143,7 +141,7 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
     }
 
     // Register to external server, awaiting for users
-    public void start() {
+    public void run() {
         // check, if parameters set
         if (Strings.isNullOrEmpty(token) || Strings.isNullOrEmpty(username)) {
             Exception e = new RuntimeException("Telegram. Not all parameters bound, use first: setup(\"username\", \"token\")");
@@ -167,7 +165,6 @@ public class Telegram extends TelegramLongPollingBot implements IConnection {
 
     // Integer identifier of connection
     private int id = -1;
-
     public void setConnId(int id) { this.id = id; }
     //public int getConnId() { return id; }
 

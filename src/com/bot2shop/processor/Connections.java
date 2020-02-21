@@ -8,6 +8,8 @@ import com.bot2shop.model.Session;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /*
  *   Connections to messengers
@@ -71,8 +73,10 @@ public class Connections<KeyWordType> {
     // start all connections
     public void startAll() {
         for (IConnection conn : connections) {
-            conn.start();
+            ExecutorService exec = Executors.newCachedThreadPool();
+            exec.execute((Runnable) conn);
         }
+        //TODO: make a watchdog
     }
 
 }
