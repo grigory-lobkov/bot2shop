@@ -23,6 +23,7 @@ Anything, what personal do, machine can do, just give the algorithm
 
 ## Supported messengers
 - Telegram
+- VK group messages
 
 ## Help
 If you want for business relationship, write me by email grigorymail.at.mail.in.ru or call +7922122DATA
