@@ -1,3 +1,4 @@
+![messaging bot](https://user-images.githubusercontent.com/36440722/85655552-18dc6480-b6c9-11ea-8325-59611b945733.jpeg)
 # Bot for Sales, FAQ, Support, HR
 Program is written on JAVA and must be configured before run. You can improve algorithms and help others: push your aspirations.
 
